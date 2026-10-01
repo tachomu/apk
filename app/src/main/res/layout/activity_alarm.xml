@@ -7,53 +7,45 @@
     android:padding="28dp">
 
     <TextView
+        android:id="@+id/alarmLevel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ЧАС ЇСТИ"
+        android:text="МАКСИМАЛЬНА МЕЖА"
         android:textColor="@color/danger"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:fontFamily="sans-serif-medium"
-        android:letterSpacing="0.12"/>
+        android:letterSpacing="0.10"/>
 
     <TextView
+        android:id="@+id/alarmTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="Ти вже дійшов до максимальної межі"
+        android:text="Час почати їсти"
         android:textColor="@color/text"
-        android:textSize="32sp"
+        android:textSize="34sp"
         android:fontFamily="sans-serif-medium"/>
 
     <TextView
+        android:id="@+id/alarmBody"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:gravity="center"
-        android:text="Сигнал не припиниться, доки ти не підтвердиш, що сів їсти."
+        android:text="Сигнал припиниться тільки після того, як ти відкриєш MealCoach, сфотографуєш їжу і почнеш прийом."
         android:textColor="@color/muted"
         android:textSize="16sp"/>
 
     <Button
-        android:id="@+id/alarmSitButton"
+        android:id="@+id/alarmStartButton"
         android:layout_width="match_parent"
-        android:layout_height="68dp"
+        android:layout_height="70dp"
         android:layout_marginTop="34dp"
         android:background="@drawable/bg_primary"
-        android:text="СІВ ЇСТИ"
+        android:text="СФОТОГРАФУВАТИ ЇЖУ → ПОЧАТИ"
         android:textAllCaps="false"
         android:textColor="@color/bg"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:fontFamily="sans-serif-medium"/>
-
-    <Button
-        android:id="@+id/alarmAteButton"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/bg_secondary"
-        android:text="Я ВЖЕ ПОЇВ"
-        android:textAllCaps="false"
-        android:textColor="@color/text"
-        android:textSize="17sp"/>
 </LinearLayout>
