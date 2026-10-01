@@ -3,20 +3,24 @@ package com.mealcoach.app;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
+import android.graphics.Insets;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.view.View;
+import android.view.WindowInsets;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,13 +31,22 @@ import java.util.Locale;
 public class MainActivity extends Activity {
     private static final int REQ_CAMERA = 42;
     private static final int REQ_EXPORT = 43;
+    private static final int REQ_DEBUG_EXPORT = 44;
 
-    private TextView statusChip, cycleLabel, countdown, deadlineText, mealsText, snacksText, historyText;
+    private TextView screenTitle, statusChip, cycleLabel, countdown, deadlineText;
+    private TextView mealsText, mealDotsText, snacksText, flowTitle, flowSteps;
+    private TextView lastEventText, historyText, testStatus;
     private ProgressBar cycleProgress;
-    private Button wakeButton, sitButton, ateButton, snackButton, delayButton, photoButton, sleepButton, exportButton;
-    private LinearLayout activeActions;
+    private Button primaryButton, snackButton, delayButton, sleepButton;
+    private Button exportButton, diagnosticExportButton, testButton;
+    private Button navToday, navHistory, navSettings;
+    private Button notificationSettingsButton, exactAlarmButton, batteryButton, autostartButton;
+    private LinearLayout flowHint, secondaryActions;
+    private ScrollView todayPage, historyPage, settingsPage;
+
     private final Handler handler = new Handler();
     private Uri pendingPhotoUri;
+    private String pendingFoodAction;
 
     private final Runnable ticker = new Runnable() {
         @Override public void run() {
@@ -45,65 +58,110 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setStatusBarColor(getColor(R.color.bg));
+        getWindow().setNavigationBarColor(getColor(R.color.bg));
         setContentView(R.layout.activity_main);
+
+        applySystemInsets();
         NotificationHelper.ensureChannels(this);
         requestNotificationsIfNeeded();
+        bindViews();
+        wireActions();
 
+        AlarmScheduler.scheduleCurrent(this);
+        showPage(0);
+        refreshAll();
+
+        findViewById(R.id.root).postDelayed(() -> consumeForceCamera(getIntent()), 350L);
+    }
+
+    private void applySystemInsets() {
+        View root = findViewById(R.id.root);
+        root.setOnApplyWindowInsetsListener((v, insets) -> {
+            int top;
+            int bottom;
+            if (Build.VERSION.SDK_INT >= 30) {
+                Insets bars = insets.getInsets(WindowInsets.Type.systemBars());
+                top = bars.top;
+                bottom = bars.bottom;
+            } else {
+                top = insets.getSystemWindowInsetTop();
+                bottom = insets.getSystemWindowInsetBottom();
+            }
+            v.setPadding(0, top, 0, bottom);
+            return insets;
+        });
+        root.requestApplyInsets();
+    }
+
+    private void bindViews() {
+        screenTitle = findViewById(R.id.screenTitle);
         statusChip = findViewById(R.id.statusChip);
         cycleLabel = findViewById(R.id.cycleLabel);
         countdown = findViewById(R.id.countdown);
         deadlineText = findViewById(R.id.deadlineText);
         mealsText = findViewById(R.id.mealsText);
+        mealDotsText = findViewById(R.id.mealDotsText);
         snacksText = findViewById(R.id.snacksText);
+        flowTitle = findViewById(R.id.flowTitle);
+        flowSteps = findViewById(R.id.flowSteps);
+        lastEventText = findViewById(R.id.lastEventText);
         historyText = findViewById(R.id.historyText);
+        testStatus = findViewById(R.id.testStatus);
         cycleProgress = findViewById(R.id.cycleProgress);
-        wakeButton = findViewById(R.id.wakeButton);
-        activeActions = findViewById(R.id.activeActions);
-        sitButton = findViewById(R.id.sitButton);
-        ateButton = findViewById(R.id.ateButton);
+
+        primaryButton = findViewById(R.id.primaryButton);
         snackButton = findViewById(R.id.snackButton);
         delayButton = findViewById(R.id.delayButton);
-        photoButton = findViewById(R.id.photoButton);
         sleepButton = findViewById(R.id.sleepButton);
         exportButton = findViewById(R.id.exportButton);
+        diagnosticExportButton = findViewById(R.id.diagnosticExportButton);
+        testButton = findViewById(R.id.testButton);
 
-        wakeButton.setOnClickListener(v -> {
-            MealEngine.wake(this);
-            refreshAll();
+        navToday = findViewById(R.id.navToday);
+        navHistory = findViewById(R.id.navHistory);
+        navSettings = findViewById(R.id.navSettings);
+
+        notificationSettingsButton = findViewById(R.id.notificationSettingsButton);
+        exactAlarmButton = findViewById(R.id.exactAlarmButton);
+        batteryButton = findViewById(R.id.batteryButton);
+        autostartButton = findViewById(R.id.autostartButton);
+
+        flowHint = findViewById(R.id.flowHint);
+        secondaryActions = findViewById(R.id.secondaryActions);
+        todayPage = findViewById(R.id.todayPage);
+        historyPage = findViewById(R.id.historyPage);
+        settingsPage = findViewById(R.id.settingsPage);
+    }
+
+    private void wireActions() {
+        primaryButton.setOnClickListener(v -> {
+            SharedPreferences p = MealEngine.prefs(this);
+            if (!p.getBoolean(MealEngine.K_DAY, false)) {
+                MealEngine.wake(this);
+                refreshAll();
+            } else if (p.getBoolean(MealEngine.K_EATING, false)) {
+                MealEngine.ate(this);
+                Toast.makeText(this, "Прийом їжі записано.", Toast.LENGTH_SHORT).show();
+                refreshAll();
+            } else {
+                beginFoodPhoto("MEAL");
+            }
         });
 
-        sitButton.setOnClickListener(v -> {
-            MealEngine.startEating(this);
-            refreshAll();
-        });
-
-        ateButton.setOnClickListener(v -> {
-            MealEngine.ate(this);
-            refreshAll();
-        });
-
-        snackButton.setOnClickListener(v -> {
-            boolean shifted = MealEngine.snack(this);
-            Toast.makeText(this,
-                    shifted ? "Перекус: основну їжу перенесено приблизно на годину." :
-                            "Перекус записано, але третій поспіль уже не переносить основну їжу.",
-                    Toast.LENGTH_LONG).show();
-            refreshAll();
-        });
+        snackButton.setOnClickListener(v -> beginFoodPhoto("SNACK"));
 
         delayButton.setOnClickListener(v -> {
             boolean ok = MealEngine.delay15(this);
             Toast.makeText(this,
-                    ok ? "Додано 15 хв." : "Ліміт відкладання для цього циклу вичерпано.",
+                    ok ? "Додано 15 хв." : "Зараз відкладання недоступне або ліміт вичерпано.",
                     Toast.LENGTH_SHORT).show();
             refreshAll();
         });
 
-        photoButton.setOnClickListener(v -> takePhoto());
-
         sleepButton.setOnClickListener(v -> new AlertDialog.Builder(this)
                 .setTitle("Завершити день?")
-                .setMessage("Усі нагадування про їжу зупиняться до наступного «Я прокинувся».")
+                .setMessage("Усі нагадування зупиняться до наступного «Я прокинувся».")
                 .setNegativeButton("Скасувати", null)
                 .setPositiveButton("Лягаю спати", (d, w) -> {
                     MealEngine.sleep(this);
@@ -112,15 +170,73 @@ public class MainActivity extends Activity {
                 .show());
 
         exportButton.setOnClickListener(v -> exportCsv());
+        diagnosticExportButton.setOnClickListener(v -> exportDiagnostics());
 
-        AlarmScheduler.scheduleCurrent(this);
+        testButton.setOnClickListener(v -> {
+            SharedPreferences p = MealEngine.prefs(this);
+            if (p.getBoolean(MealEngine.K_DAY, false)) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Запустити 6-хвилинний тест?")
+                        .setMessage("Поточний день буде замінено тестовим циклом. Кожен рівень ескалації пройде приблизно за хвилину.")
+                        .setNegativeButton("Скасувати", null)
+                        .setPositiveButton("Запустити", (d, w) -> startTestNow())
+                        .show();
+            } else {
+                startTestNow();
+            }
+        });
+
+        navToday.setOnClickListener(v -> showPage(0));
+        navHistory.setOnClickListener(v -> showPage(1));
+        navSettings.setOnClickListener(v -> showPage(2));
+
+        notificationSettingsButton.setOnClickListener(v -> openNotificationSettings());
+        exactAlarmButton.setOnClickListener(v -> openExactAlarmSettings());
+        batteryButton.setOnClickListener(v -> openBatterySettings());
+        autostartButton.setOnClickListener(v -> openAutostartSettings());
+    }
+
+    private void startTestNow() {
+        MealEngine.startTest(this);
+        showPage(0);
+        Toast.makeText(this, "Тест запущено. Не закривай сповіщення вручну — дивимось повний ланцюжок.", Toast.LENGTH_LONG).show();
         refreshAll();
+    }
+
+    private void showPage(int page) {
+        todayPage.setVisibility(page == 0 ? View.VISIBLE : View.GONE);
+        historyPage.setVisibility(page == 1 ? View.VISIBLE : View.GONE);
+        settingsPage.setVisibility(page == 2 ? View.VISIBLE : View.GONE);
+
+        navToday.setTextColor(getColor(page == 0 ? R.color.accent : R.color.muted));
+        navHistory.setTextColor(getColor(page == 1 ? R.color.accent : R.color.muted));
+        navSettings.setTextColor(getColor(page == 2 ? R.color.accent : R.color.muted));
+
+        screenTitle.setText(page == 0 ? "MEAL COACH" : page == 1 ? "ІСТОРІЯ" : "НАЛАШТУВАННЯ");
+        if (page == 1) refreshHistory();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        findViewById(R.id.root).postDelayed(() -> consumeForceCamera(intent), 250L);
+    }
+
+    private void consumeForceCamera(Intent intent) {
+        if (intent != null && intent.getBooleanExtra("force_camera", false)) {
+            intent.removeExtra("force_camera");
+            SharedPreferences p = MealEngine.prefs(this);
+            if (p.getBoolean(MealEngine.K_DAY, false) && !p.getBoolean(MealEngine.K_EATING, false)) {
+                showPage(0);
+                beginFoodPhoto("MEAL");
+            }
+        }
     }
 
     @Override protected void onResume() {
         super.onResume();
-        renderState();
-        refreshHistory();
+        refreshAll();
         handler.removeCallbacks(ticker);
         handler.post(ticker);
     }
@@ -145,37 +261,44 @@ public class MainActivity extends Activity {
     private void renderState() {
         SharedPreferences p = MealEngine.prefs(this);
         boolean day = p.getBoolean(MealEngine.K_DAY, false);
+        boolean test = p.getBoolean(MealEngine.K_TEST, false);
         int meals = p.getInt(MealEngine.K_MEALS, 0);
         int snacks = p.getInt(MealEngine.K_SNACKS, 0);
 
-        mealsText.setText(meals >= 3 ? "СЬОГОДНІ  " + meals + " / 3+  ✓" : "СЬОГОДНІ  " + meals + " / 3+");
+        mealDotsText.setText(mealDots(meals));
+        mealsText.setText(meals + " / 3+ прийомів" + (meals >= 3 ? "  ✓" : ""));
         snacksText.setText("ПЕРЕКУСИ  " + snacks);
+        lastEventText.setText(LogStore.recent(this, 1));
+        testStatus.setText(test
+                ? "ТЕСТ АКТИВНИЙ: цикл стиснуто до 6 хвилин."
+                : "6 хвилин: кожна стадія ескалації проходить приблизно за хвилину.");
 
         if (!day) {
-            wakeButton.setVisibility(View.VISIBLE);
-            activeActions.setVisibility(View.GONE);
             statusChip.setText("НЕ ЗАПУЩЕНО");
             statusChip.setTextColor(getColor(R.color.muted));
             cycleLabel.setText("ДЕНЬ ЩЕ НЕ ЗАПУЩЕНО");
-            countdown.setText("Я ПРОКИНУВСЯ");
+            countdown.setText("ПОЧАТИ ДЕНЬ");
             countdown.setTextColor(getColor(R.color.text));
-            deadlineText.setText("Натисни кнопку — запустимо таймер першої їжі");
+            deadlineText.setText("Після пробудження запустимо перше вікно їжі");
             cycleProgress.setProgress(0);
+
+            flowHint.setVisibility(View.GONE);
+            secondaryActions.setVisibility(View.GONE);
+            sleepButton.setVisibility(View.GONE);
+            primaryButton.setText("Я ПРОКИНУВСЯ");
             return;
         }
 
-        wakeButton.setVisibility(View.GONE);
-        activeActions.setVisibility(View.VISIBLE);
+        sleepButton.setVisibility(View.VISIBLE);
 
         boolean eating = p.getBoolean(MealEngine.K_EATING, false);
         boolean first = p.getBoolean(MealEngine.K_FIRST, false);
-        boolean snackMode = p.getBoolean(MealEngine.K_SNACK_MODE, false);
         long start = p.getLong(MealEngine.K_START, System.currentTimeMillis());
         long pref = p.getLong(MealEngine.K_PREF, start);
         long dead = p.getLong(MealEngine.K_DEADLINE, pref);
         long now = System.currentTimeMillis();
 
-        cycleLabel.setText(eating ? "ПРИЙОМ ЇЖІ" : snackMode ? "ПІСЛЯ ПЕРЕКУСУ" : first ? "ПЕРША ЇЖА" : "НАСТУПНА ЇЖА");
+        cycleLabel.setText(test ? "ТЕСТОВИЙ ЦИКЛ" : first ? "ПЕРША ЇЖА" : "НАСТУПНА ЇЖА");
 
         if (eating) {
             long eatingStart = p.getLong(MealEngine.K_EATING_START, now);
@@ -183,28 +306,36 @@ public class MainActivity extends Activity {
             statusChip.setTextColor(getColor(R.color.accent));
             countdown.setText(formatDuration(now - eatingStart));
             countdown.setTextColor(getColor(R.color.accent));
-            deadlineText.setText("Коли закінчиш — натисни «Поїв»");
+            deadlineText.setText("Таймер прийому їжі • фото вже записане");
             cycleProgress.setProgress(1000);
-            sitButton.setEnabled(false);
-            sitButton.setAlpha(0.45f);
+
+            flowHint.setVisibility(View.VISIBLE);
+            flowTitle.setText("ЗАРАЗ ТИ ЇСИ");
+            flowSteps.setText("Їж нормально, не поспішай.\nКоли реально закінчиш — натисни кнопку нижче.");
+            primaryButton.setText("ЗАКІНЧИВ ЇСТИ");
+            secondaryActions.setVisibility(View.GONE);
             return;
         }
 
-        sitButton.setEnabled(true);
-        sitButton.setAlpha(1f);
+        flowHint.setVisibility(View.VISIBLE);
+        flowTitle.setText("КОЛИ СІДАЄШ ЇСТИ");
+        flowSteps.setText("1  Сфотографуй їжу\n2  Після фото починай їсти\n3  Коли закінчиш — натисни «Закінчив їсти»");
+        primaryButton.setText("СФОТОГРАФУВАТИ ЇЖУ → ПОЧАТИ");
+        secondaryActions.setVisibility(View.VISIBLE);
+        delayButton.setVisibility(now >= pref ? View.VISIBLE : View.GONE);
 
         long span = Math.max(1L, dead - start);
         int progress = (int) Math.max(0, Math.min(1000, ((now - start) * 1000L) / span));
         cycleProgress.setProgress(progress);
 
         if (now < pref) {
-            statusChip.setText("ВСЕ ДОБРЕ");
+            statusChip.setText(test ? "ТЕСТ" : "ВСЕ ДОБРЕ");
             statusChip.setTextColor(getColor(R.color.accent));
             countdown.setText(formatDuration(pref - now));
             countdown.setTextColor(getColor(R.color.text));
             deadlineText.setText("До бажаного часу • максимум " + clock(dead));
         } else if (now < dead) {
-            statusChip.setText("ВЖЕ БАЖАНО");
+            statusChip.setText("ВЖЕ ПОРА");
             statusChip.setTextColor(getColor(R.color.warn));
             countdown.setText(formatDuration(dead - now));
             countdown.setTextColor(getColor(R.color.warn));
@@ -214,8 +345,15 @@ public class MainActivity extends Activity {
             statusChip.setTextColor(getColor(R.color.danger));
             countdown.setText("+" + formatDuration(now - dead));
             countdown.setTextColor(getColor(R.color.danger));
-            deadlineText.setText("Максимальна межа вже пройдена");
+            deadlineText.setText("Максимальна межа пройдена");
         }
+    }
+
+    private String mealDots(int meals) {
+        String a = meals >= 1 ? "●" : "○";
+        String b = meals >= 2 ? "●" : "○";
+        String c = meals >= 3 ? "●" : "○";
+        return a + "  " + b + "  " + c;
     }
 
     private String formatDuration(long ms) {
@@ -233,14 +371,14 @@ public class MainActivity extends Activity {
     }
 
     private void refreshHistory() {
-        historyText.setText(LogStore.recent(this, 7));
+        if (historyText != null) historyText.setText(LogStore.recent(this, 100));
     }
 
-    private void takePhoto() {
-        if (!MealEngine.prefs(this).getBoolean(MealEngine.K_DAY, false)) {
-            Toast.makeText(this, "Спочатку запусти день.", Toast.LENGTH_SHORT).show();
-            return;
-        }
+    private void beginFoodPhoto(String action) {
+        SharedPreferences p = MealEngine.prefs(this);
+        if (!p.getBoolean(MealEngine.K_DAY, false) || p.getBoolean(MealEngine.K_EATING, false)) return;
+
+        pendingFoodAction = action;
 
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.DISPLAY_NAME, "MealCoach_" + System.currentTimeMillis() + ".jpg");
@@ -248,9 +386,10 @@ public class MainActivity extends Activity {
         if (Build.VERSION.SDK_INT >= 29) {
             values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MealCoach");
         }
+
         pendingPhotoUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         if (pendingPhotoUri == null) {
-            Toast.makeText(this, "Не вдалося підготувати файл фото.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Не вдалося створити файл для фото.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -261,6 +400,7 @@ public class MainActivity extends Activity {
         } else {
             getContentResolver().delete(pendingPhotoUri, null, null);
             pendingPhotoUri = null;
+            pendingFoodAction = null;
             Toast.makeText(this, "Камеру не знайдено.", Toast.LENGTH_SHORT).show();
         }
     }
@@ -273,6 +413,61 @@ public class MainActivity extends Activity {
         startActivityForResult(i, REQ_EXPORT);
     }
 
+    private void exportDiagnostics() {
+        DiagnosticStore.log(this, "DIAGNOSTIC_EXPORT_REQUEST", "user requested export");
+        Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        i.setType("text/plain");
+        i.putExtra(Intent.EXTRA_TITLE, "MealCoach_debug.log");
+        startActivityForResult(i, REQ_DEBUG_EXPORT);
+    }
+
+    private void openNotificationSettings() {
+        Intent i = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+        i.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+        startActivity(i);
+    }
+
+    private void openExactAlarmSettings() {
+        try {
+            if (Build.VERSION.SDK_INT >= 31) {
+                Intent i = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
+                        Uri.parse("package:" + getPackageName()));
+                startActivity(i);
+            } else {
+                Toast.makeText(this, "На цій версії Android окремий дозвіл не потрібен.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            openAppDetails();
+        }
+    }
+
+    private void openBatterySettings() {
+        try {
+            startActivity(new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS));
+        } catch (Exception e) {
+            openAppDetails();
+        }
+    }
+
+    private void openAutostartSettings() {
+        try {
+            Intent i = new Intent();
+            i.setComponent(new ComponentName(
+                    "com.miui.securitycenter",
+                    "com.miui.permcenter.autostart.AutoStartManagementActivity"));
+            startActivity(i);
+        } catch (Exception e) {
+            openAppDetails();
+        }
+    }
+
+    private void openAppDetails() {
+        Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.parse("package:" + getPackageName()));
+        startActivity(i);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -280,18 +475,41 @@ public class MainActivity extends Activity {
         if (requestCode == REQ_CAMERA) {
             if (resultCode == RESULT_OK && pendingPhotoUri != null) {
                 MealEngine.savePhoto(this, pendingPhotoUri.toString());
-                Toast.makeText(this, "Фото збережено в журнал.", Toast.LENGTH_SHORT).show();
-            } else if (pendingPhotoUri != null) {
-                getContentResolver().delete(pendingPhotoUri, null, null);
+
+                if ("SNACK".equals(pendingFoodAction)) {
+                    boolean shifted = MealEngine.snack(this);
+                    Toast.makeText(this,
+                            shifted
+                                    ? "Перекус записано. Наступну основну їжу посунуто на годину."
+                                    : "Перекус записано. Це третій поспіль, тому дедлайн більше не переноситься.",
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    MealEngine.startEating(this);
+                    Toast.makeText(this,
+                            "Фото записано. Тепер їж; коли закінчиш — натисни «Закінчив їсти».",
+                            Toast.LENGTH_LONG).show();
+                }
+            } else {
+                if (pendingPhotoUri != null) {
+                    getContentResolver().delete(pendingPhotoUri, null, null);
+                }
+                Toast.makeText(this, "Фото скасовано — прийом їжі не розпочато.", Toast.LENGTH_SHORT).show();
             }
             pendingPhotoUri = null;
-            refreshHistory();
+            pendingFoodAction = null;
+            refreshAll();
             return;
         }
 
         if (requestCode == REQ_EXPORT && resultCode == RESULT_OK && data != null && data.getData() != null) {
             boolean ok = LogStore.copyTo(this, data.getData());
             Toast.makeText(this, ok ? "CSV експортовано." : "Журнал ще порожній.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (requestCode == REQ_DEBUG_EXPORT && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            boolean ok = DiagnosticStore.copyTo(this, data.getData());
+            Toast.makeText(this, ok ? "Діагностику експортовано." : "Діагностичних логів ще немає.", Toast.LENGTH_SHORT).show();
         }
     }
 }
