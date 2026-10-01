@@ -12,12 +12,26 @@ public class NotificationReceiver extends BroadcastReceiver {
         if (!p.getBoolean(MealEngine.K_DAY, false) || p.getBoolean(MealEngine.K_EATING, false)) return;
 
         int type = intent.getIntExtra("type", 0);
-        if (type == AlarmScheduler.FINAL) {
-            Intent service = new Intent(context, AlarmService.class);
-            if (Build.VERSION.SDK_INT >= 26) context.startForegroundService(service);
-            else context.startService(service);
-        } else if (type >= AlarmScheduler.PREP && type <= AlarmScheduler.ESCALATE) {
+        DiagnosticStore.log(context, "ALARM_FIRED", "type=" + type);
+
+        if (type == AlarmScheduler.LATE_30) {
+            startService(context, AlarmService.MODE_CONFIRM);
+        } else if (type == AlarmScheduler.FINAL) {
+            startService(context, AlarmService.MODE_FINAL);
+        } else if (type == AlarmScheduler.PREP_60
+                || type == AlarmScheduler.PREP_20
+                || type == AlarmScheduler.PREFERRED
+                || type == AlarmScheduler.LATE_15
+                || type == AlarmScheduler.LATE_45) {
             NotificationHelper.showReminder(context, type);
         }
+    }
+
+    private void startService(Context context, String mode) {
+        NotificationHelper.clearReminder(context);
+        Intent service = new Intent(context, AlarmService.class);
+        service.putExtra("mode", mode);
+        if (Build.VERSION.SDK_INT >= 26) context.startForegroundService(service);
+        else context.startService(service);
     }
 }
