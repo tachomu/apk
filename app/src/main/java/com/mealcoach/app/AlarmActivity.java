@@ -1,6 +1,7 @@
 package com.mealcoach.app;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -16,17 +17,17 @@ public class AlarmActivity extends Activity {
         );
         setContentView(R.layout.activity_alarm);
 
-        Button sit = findViewById(R.id.alarmSitButton);
-        Button ate = findViewById(R.id.alarmAteButton);
-
-        sit.setOnClickListener(v -> {
-            MealEngine.startEating(this);
-            finish();
+        Button start = findViewById(R.id.alarmStartButton);
+        start.setOnClickListener(v -> {
+            Intent i = new Intent(this, MainActivity.class);
+            i.putExtra("force_camera", true);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(i);
         });
+    }
 
-        ate.setOnClickListener(v -> {
-            MealEngine.ate(this);
-            finish();
-        });
+    @Override
+    public void onBackPressed() {
+        // The final alarm is dismissed by starting the meal, not by Back.
     }
 }
