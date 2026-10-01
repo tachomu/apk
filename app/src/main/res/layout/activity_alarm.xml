@@ -1,0 +1,59 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="28dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ЧАС ЇСТИ"
+        android:textColor="@color/danger"
+        android:textSize="18sp"
+        android:fontFamily="sans-serif-medium"
+        android:letterSpacing="0.12"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="Ти вже дійшов до максимальної межі"
+        android:textColor="@color/text"
+        android:textSize="32sp"
+        android:fontFamily="sans-serif-medium"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:text="Сигнал не припиниться, доки ти не підтвердиш, що сів їсти."
+        android:textColor="@color/muted"
+        android:textSize="16sp"/>
+
+    <Button
+        android:id="@+id/alarmSitButton"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:layout_marginTop="34dp"
+        android:background="@drawable/bg_primary"
+        android:text="СІВ ЇСТИ"
+        android:textAllCaps="false"
+        android:textColor="@color/bg"
+        android:textSize="20sp"
+        android:fontFamily="sans-serif-medium"/>
+
+    <Button
+        android:id="@+id/alarmAteButton"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_secondary"
+        android:text="Я ВЖЕ ПОЇВ"
+        android:textAllCaps="false"
+        android:textColor="@color/text"
+        android:textSize="17sp"/>
+</LinearLayout>
