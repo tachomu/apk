@@ -84,6 +84,7 @@ public final class LogStore {
             case "DELAY_BLOCKED": return "Відкладання заблоковано";
             case "SLEEP": return "Ліг спати";
             case "PHOTO": return "Фото їжі";
+            case "TEST_START": return "Запущено тест нагадувань";
             default: return event;
         }
     }
