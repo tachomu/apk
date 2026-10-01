@@ -62,7 +62,10 @@ public final class AlarmScheduler {
     }
 
     private static void scheduleOne(Context context, int type, long at, long now) {
-        if (at <= now) return;
+        if (at <= now) {
+            if (type == FINAL) at = now + 1500L;
+            else return;
+        }
 
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pi = pending(context, type);
