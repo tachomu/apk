@@ -1,0 +1,61 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="28dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ТИ ПРОПУСТИВ ЩЕ 30 ХВ"
+        android:textColor="@color/danger"
+        android:textSize="15sp"
+        android:fontFamily="sans-serif-medium"
+        android:letterSpacing="0.09"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="Не ігноруй це автоматично"
+        android:textColor="@color/text"
+        android:textSize="31sp"
+        android:fontFamily="sans-serif-medium"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:text="Щоб прибрати цей екран, введи ПІДТВЕРДЖУЮ. Наступна ескалація все одно залишиться запланованою."
+        android:textColor="@color/muted"
+        android:textSize="16sp"/>
+
+    <EditText
+        android:id="@+id/confirmInput"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="28dp"
+        android:background="@drawable/bg_secondary"
+        android:gravity="center"
+        android:hint="ПІДТВЕРДЖУЮ"
+        android:singleLine="true"
+        android:textColor="@color/text"
+        android:textColorHint="@color/muted"
+        android:textSize="18sp"/>
+
+    <Button
+        android:id="@+id/confirmButton"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_danger"
+        android:text="ПІДТВЕРДИТИ"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:fontFamily="sans-serif-medium"/>
+</LinearLayout>
