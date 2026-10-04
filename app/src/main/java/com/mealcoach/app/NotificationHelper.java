@@ -137,7 +137,8 @@ public final class NotificationHelper {
                 .setContentTitle(title).setContentText(body).setStyle(new Notification.BigTextStyle().bigText(body))
                 .setPriority(Notification.PRIORITY_HIGH).setAutoCancel(true).setContentIntent(openWater(c))
                 .setColor(color)
-                .addAction(new Notification.Action.Builder(null,"ВІДКРИТИ ВОДУ",openWater(c)).build()).build();
+                .addAction(new Notification.Action.Builder(null,"+"+HydrationEngine.quick(c,1)+" МЛ",waterAdd(c,HydrationEngine.quick(c,1),751)).build())
+                .addAction(new Notification.Action.Builder(null,"ВІДКРИТИ",openWater(c)).build()).build();
         NotificationManager nm=(NotificationManager)c.getSystemService(Context.NOTIFICATION_SERVICE);
         if(nm!=null){nm.cancel(WATER_ID);nm.notify(WATER_ID,n);}
         DiagnosticStore.log(c,"WATER_NOTIFICATION_SHOWN","status="+status);
@@ -173,6 +174,11 @@ public final class NotificationHelper {
                 .setContentIntent(pi).setFullScreenIntent(pi,true).build();
     }
 
+    public static void clearWaterReminder(Context c){
+        NotificationManager nm=(NotificationManager)c.getSystemService(Context.NOTIFICATION_SERVICE);
+        if(nm!=null)nm.cancel(WATER_ID);
+    }
+
     public static void clearReminder(Context c){
         NotificationManager nm=(NotificationManager)c.getSystemService(Context.NOTIFICATION_SERVICE);
         if(nm!=null)nm.cancel(REMINDER_ID);
@@ -194,6 +200,13 @@ public final class NotificationHelper {
         Intent i=new Intent(c,MainActivity.class);i.putExtra("force_camera",true);i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
         return PendingIntent.getActivity(c,req,i,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
     }
+    private static PendingIntent waterAdd(Context c,int amount,int req){
+        Intent i=new Intent(c,ActionReceiver.class);
+        i.setAction("com.mealcoach.WATER_ADD");
+        i.putExtra("amount",amount);
+        return PendingIntent.getBroadcast(c,req,i,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
+    }
+
     private static PendingIntent action(Context c,String action,int req){
         Intent i=new Intent(c,ActionReceiver.class);i.setAction("com.mealcoach."+action);
         return PendingIntent.getBroadcast(c,req,i,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
