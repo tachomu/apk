@@ -80,7 +80,7 @@ public final class NotificationHelper {
                 channel=CH_PREP;break;
             case AlarmScheduler.PREP_20:
                 title="Через 20 хв — їжа";
-                body="Не починай нову катку. Відкладай справи й готуй їжу.";
+                body=BehaviorLearning.prep20Text(c);
                 channel=CH_PREP;break;
             case AlarmScheduler.PREFERRED:
                 title="Пора їсти";
@@ -158,15 +158,39 @@ public final class NotificationHelper {
     }
 
     public static Notification buildEscalationNotification(Context c,String mode){
+        return buildEscalationNotification(c,mode,0);
+    }
+
+    public static Notification buildEscalationNotification(Context c,String mode,int testStage){
         ensureChannels(c);
-        boolean finalMode=AlarmService.MODE_FINAL.equals(mode);
-        Intent full=new Intent(c,finalMode?AlarmActivity.class:ConfirmActivity.class);
+        boolean test=AlarmService.MODE_TEST_CONFIRM.equals(mode)||AlarmService.MODE_TEST_FINAL.equals(mode);
+        boolean finalMode=AlarmService.MODE_FINAL.equals(mode)||AlarmService.MODE_TEST_FINAL.equals(mode);
+
+        Intent full;
+        int requestCode;
+        String title;
+        String body;
+
+        if(test){
+            int stage=testStage>0?testStage:(finalMode?7:5);
+            full=new Intent(c,ReminderTestActivity.class);
+            full.putExtra("stage",stage);
+            full.putExtra("final_mode",finalMode);
+            requestCode=790+stage;
+            title=finalMode?"ТЕСТ · FINAL ALARM":"ТЕСТ · FULL-SCREEN +30";
+            body="Це контрольний сигнал. Він автоматично припиниться приблизно через 7 секунд.";
+        }else{
+            full=new Intent(c,finalMode?AlarmActivity.class:ConfirmActivity.class);
+            requestCode=finalMode?730:720;
+            title=finalMode?"МАКСИМАЛЬНА МЕЖА":"ТИ ПРОПУСТИВ ЩЕ 30 ХВ";
+            body=finalMode
+                    ?"Сигнал триватиме, доки ти не сфотографуєш їжу і не почнеш прийом."
+                    :"Звук поступово посилюється. Введи «ПІДТВЕРДЖУЮ». Наступний рівень активує блок соцмереж.";
+        }
+
         full.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pi=PendingIntent.getActivity(c,finalMode?730:720,full,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
-        String title=finalMode?"МАКСИМАЛЬНА МЕЖА":"ТИ ПРОПУСТИВ ЩЕ 30 ХВ";
-        String body=finalMode
-                ?"Сигнал триватиме, доки ти не сфотографуєш їжу і не почнеш прийом."
-                :"Звук поступово посилюється. Введи «ПІДТВЕРДЖУЮ». Наступний рівень активує блок соцмереж.";
+        PendingIntent pi=PendingIntent.getActivity(c,requestCode,full,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
+
         return new Notification.Builder(c,CH_ALARM).setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle(title).setContentText(body).setStyle(new Notification.BigTextStyle().bigText(body))
                 .setCategory(Notification.CATEGORY_ALARM).setPriority(Notification.PRIORITY_MAX)
