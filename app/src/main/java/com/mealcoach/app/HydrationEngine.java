@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -222,8 +223,8 @@ public final class HydrationEngine {
                 if(first){first=false;continue;}
                 String[] p=line.split(",");
                 if(p.length<4)continue;
-                long ts=Long.parseLong(p[0]);
-                if(ts<wake)continue;
+                long ts=parseTimestamp(p[0]);
+                if(ts<=0||ts<wake)continue;
                 if("DRINK".equals(p[1])||"UNDO".equals(p[1])){
                     out.add(new long[]{ts,Integer.parseInt(p[3])});
                 }
@@ -245,8 +246,8 @@ public final class HydrationEngine {
                 if(first){first=false;continue;}
                 String[] p=line.split(",");
                 if(p.length<4)continue;
-                long ts=Long.parseLong(p[0]);
-                if(ts<wake)continue;
+                long ts=parseTimestamp(p[0]);
+                if(ts<=0||ts<wake)continue;
                 if("DRINK".equals(p[1])){
                     stack.add(new long[]{ts,Integer.parseInt(p[2])});
                 }else if("UNDO".equals(p[1])&&!stack.isEmpty()){
@@ -282,7 +283,7 @@ public final class HydrationEngine {
                 if(first){first=false;continue;}
                 String[] p=line.split(",");
                 if(p.length<4)continue;
-                long ts=Long.parseLong(p[0]);
+                long ts=parseTimestamp(p[0]);
                 if(!removed&&ts==timestamp&&"DRINK".equals(p[1])){
                     removed=true;
                     continue;
@@ -337,6 +338,17 @@ public final class HydrationEngine {
         return true;
     }
 
+    private static long parseTimestamp(String raw){
+        if(raw==null||raw.isEmpty())return -1L;
+        try{return Long.parseLong(raw.trim());}catch(Exception ignored){}
+        try{
+            SimpleDateFormat old=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.US);
+            Date d=old.parse(raw.trim());
+            return d==null?-1L:d.getTime();
+        }catch(ParseException ignored){}
+        return -1L;
+    }
+
     private static void log(Context c,String event,int amount,int total){
         try{
             File f=new File(c.getFilesDir(),FILE);
@@ -375,7 +387,8 @@ public final class HydrationEngine {
         for(String line:tail){
             String[] p=line.split(",");
             if(p.length>=4){
-                try{b.append(fmt.format(new Date(Long.parseLong(p[0])))).append("  •  ");}catch(Exception e){b.append("• ");}
+                long ts=parseTimestamp(p[0]);
+                if(ts>0)b.append(fmt.format(new Date(ts))).append("  •  ");else b.append("• ");
                 if("DRINK".equals(p[1]))b.append("+").append(p[2]).append(" мл");
                 else b.append("скасовано ").append(Math.abs(Integer.parseInt(p[2]))).append(" мл");
                 b.append("\n");
