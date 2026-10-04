@@ -10,7 +10,7 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:label="MealCoach"
+        android:label="В Сашині трусікі"
         android:theme="@style/Theme.MealCoach">
 
         <activity
