@@ -41,8 +41,18 @@ jobs:
         with:
           gradle-version: "8.9"
 
+      - name: Lint debug
+        run: gradle :app:lintDebug --stacktrace
+
       - name: Build debug APK
         run: gradle :app:assembleDebug --stacktrace
+
+      - name: Verify APK identity
+        run: |
+          APK="app/build/outputs/apk/debug/app-debug.apk"
+          AAPT="$ANDROID_HOME/build-tools/35.0.0/aapt"
+          "$AAPT" dump badging "$APK" | tee /tmp/badging.txt
+          grep -F "application-label:'десятий'" /tmp/badging.txt
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
