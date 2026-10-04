@@ -1,5 +1,6 @@
 package com.mealcoach.app;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -10,17 +11,29 @@ import android.view.View;
 public class HydrationTankView extends View {
     private final Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);
     private int total=0,goal=2500,status=HydrationEngine.GREEN,expected=0;
+    private float displayRatio=0f;
 
     public HydrationTankView(Context c){super(c);}
     public HydrationTankView(Context c,AttributeSet a){super(c,a);}
     public HydrationTankView(Context c,AttributeSet a,int s){super(c,a,s);}
 
     public void setData(int total,int goal,int expected,int status){
+        int safeGoal=Math.max(1,goal);
+        float target=Math.min(1f,Math.max(0,total)/(float)safeGoal);
+        float start=displayRatio;
         this.total=Math.max(0,total);
-        this.goal=Math.max(1,goal);
+        this.goal=safeGoal;
         this.expected=Math.max(0,expected);
         this.status=status;
-        invalidate();
+        if(Math.abs(target-start)<0.005f){
+            displayRatio=target;
+            invalidate();
+            return;
+        }
+        ValueAnimator a=ValueAnimator.ofFloat(start,target);
+        a.setDuration(420);
+        a.addUpdateListener(v->{displayRatio=(float)v.getAnimatedValue();invalidate();});
+        a.start();
     }
 
     @Override protected void onDraw(Canvas c){
@@ -32,7 +45,7 @@ public class HydrationTankView extends View {
         p.setColor(0xFF10161D);
         c.drawRoundRect(tank,28,28,p);
 
-        float ratio=Math.min(1f,total/(float)goal);
+        float ratio=displayRatio;
         float top=tank.bottom-(tank.height()*ratio);
         p.setColor(status==HydrationEngine.GREEN?0xFF59D1B5:status==HydrationEngine.ORANGE?0xFFFF9F43:0xFFFF6B81);
         c.drawRoundRect(new RectF(tank.left,top,tank.right,tank.bottom),28,28,p);
