@@ -726,6 +726,12 @@ public class MainActivity extends Activity {
                     .append(s).append(" ").append(ReminderTestManager.stageName(s));
             if(s<7)b.append("\n");
         }
+        b.append("\n\nРЕАЛЬНА ПЕРЕВІРКА");
+        b.append("\nForeground +30 ").append(mark(ReminderTestManager.service5(this)));
+        b.append("\nFull-screen +30 ").append(mark(ReminderTestManager.fullScreen5(this)));
+        b.append("\nAccessibility штраф ").append(mark(isAccessibilityEnabled()));
+        b.append("\nForeground FINAL ").append(mark(ReminderTestManager.service7(this)));
+        b.append("\nFull-screen FINAL ").append(mark(ReminderTestManager.fullScreen7(this)));
         testStatus.setText(b.toString());
         testProgress.setProgress(got);
     }
