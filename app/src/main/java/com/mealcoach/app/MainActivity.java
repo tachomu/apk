@@ -1,6 +1,7 @@
 package com.mealcoach.app;
 
 import android.Manifest;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -339,6 +340,7 @@ public class MainActivity extends Activity {
     private void showTabInstant(int tab){
         currentTab=((tab%3)+3)%3;
         overlayOpen=false;
+        applyPageTone(currentTab,false);
         foodPage.setVisibility(currentTab==0?View.VISIBLE:View.GONE);
         waterPage.setVisibility(currentTab==1?View.VISIBLE:View.GONE);
         streakPage.setVisibility(currentTab==2?View.VISIBLE:View.GONE);
@@ -371,10 +373,39 @@ public class MainActivity extends Activity {
             oldRef.setAlpha(1f);
         }).start();
 
+        int oldTab=currentTab;
         currentTab=target;
+        animatePageTone(oldTab,target);
         findViewById(R.id.root).performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
         updateNav();
         renderAll();
+    }
+
+    private int pageColor(int tab){
+        if(tab==1)return Color.rgb(8,14,22);
+        if(tab==2)return Color.rgb(16,10,21);
+        return Color.rgb(9,16,16);
+    }
+
+    private void applyPageTone(int tab,boolean updateSystemBars){
+        int color=pageColor(tab);
+        findViewById(R.id.root).setBackgroundColor(color);
+        if(updateSystemBars){
+            getWindow().setStatusBarColor(color);
+            getWindow().setNavigationBarColor(color);
+        }
+    }
+
+    private void animatePageTone(int fromTab,int toTab){
+        int from=pageColor(fromTab),to=pageColor(toTab);
+        ValueAnimator a=ValueAnimator.ofArgb(from,to);
+        a.setDuration(220L);
+        a.addUpdateListener(v->{
+            int color=(int)v.getAnimatedValue();
+            findViewById(R.id.root).setBackgroundColor(color);
+            getWindow().setStatusBarColor(color);
+        });
+        a.start();
     }
 
     private void updateNav(){
@@ -386,6 +417,8 @@ public class MainActivity extends Activity {
 
     private void openStats(){
         overlayOpen=true;
+        findViewById(R.id.root).setBackgroundColor(getColor(R.color.bg));
+        getWindow().setStatusBarColor(getColor(R.color.bg));
         foodPage.setVisibility(View.GONE);
         waterPage.setVisibility(View.GONE);
         streakPage.setVisibility(View.GONE);
@@ -399,6 +432,8 @@ public class MainActivity extends Activity {
 
     private void openSettings(){
         overlayOpen=true;
+        findViewById(R.id.root).setBackgroundColor(getColor(R.color.bg));
+        getWindow().setStatusBarColor(getColor(R.color.bg));
         foodPage.setVisibility(View.GONE);
         waterPage.setVisibility(View.GONE);
         streakPage.setVisibility(View.GONE);
@@ -663,10 +698,20 @@ public class MainActivity extends Activity {
         int streak=StreakEngine.days(this);
         String active=day?formatDuration(System.currentTimeMillis()-p.getLong(MealEngine.K_WAKE_TIME,System.currentTimeMillis())):"день не запущено";
 
+        String foodNow=AppSettings.foodEnabled(this)
+                ?meals+" / 3+ • перекуси "+snacks
+                :"модуль вимкнено";
+        String waterNow=AppSettings.waterEnabled(this)
+                ?water+" / "+goal+" мл • "+(HydrationEngine.active(this)?HydrationEngine.statusLabel(this):"не запущено")
+                :"модуль вимкнено";
+        String streakNow=AppSettings.streakEnabled(this)
+                ?streak+" "+daysWord(streak)+" • рекорд "+StreakEngine.best(this)
+                :"модуль вимкнено";
+
         currentStatsText.setText(
-                "Їжа: "+meals+" / 3+ • перекуси "+snacks+"\n"+
-                "Вода: "+water+" / "+goal+" мл • "+(HydrationEngine.active(this)?HydrationEngine.statusLabel(this):"не запущено")+"\n"+
-                "Серія: "+streak+" "+daysWord(streak)+" • рекорд "+StreakEngine.best(this)+"\n"+
+                "Їжа: "+foodNow+"\n"+
+                "Вода: "+waterNow+"\n"+
+                "Серія: "+streakNow+"\n"+
                 "Поточний wake-день: "+active
         );
         statsFoodProgress.setMax(3);
@@ -744,6 +789,11 @@ public class MainActivity extends Activity {
     }
 
     private void toggleFoodModule(){
+        SharedPreferences p=MealEngine.prefs(this);
+        if(AppSettings.foodEnabled(this)&&p.getBoolean(MealEngine.K_EATING,false)){
+            Toast.makeText(this,"Спочатку заверши поточний прийом їжі.",Toast.LENGTH_SHORT).show();
+            return;
+        }
         boolean next=!AppSettings.foodEnabled(this);
         AppSettings.setFoodEnabled(this,next);
         if(!next){
