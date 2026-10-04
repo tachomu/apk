@@ -11,6 +11,9 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -197,7 +200,17 @@ public final class HydrationEngine {
         if(lines.isEmpty())return "Поки порожньо";
         int start=Math.max(0,lines.size()-max);List<String> tail=new ArrayList<>(lines.subList(start,lines.size()));Collections.reverse(tail);
         StringBuilder b=new StringBuilder();
-        for(String line:tail){String[] p=line.split(",");if(p.length>=4){b.append("• ");if("DRINK".equals(p[1]))b.append("+").append(p[2]).append(" мл");else if("UNDO".equals(p[1]))b.append("скасовано ").append(Math.abs(Integer.parseInt(p[2]))).append(" мл");else b.append(p[1]);b.append("\n");}}
+        SimpleDateFormat fmt=new SimpleDateFormat("HH:mm",Locale.getDefault());
+        for(String line:tail){
+            String[] p=line.split(",");
+            if(p.length>=4){
+                try{b.append(fmt.format(new Date(Long.parseLong(p[0])))).append("  •  ");}catch(Exception e){b.append("• ");}
+                if("DRINK".equals(p[1]))b.append("+").append(p[2]).append(" мл");
+                else if("UNDO".equals(p[1]))b.append("скасовано ").append(Math.abs(Integer.parseInt(p[2]))).append(" мл");
+                else b.append(p[1]);
+                b.append("\n");
+            }
+        }
         return b.toString().trim();
     }
 }
