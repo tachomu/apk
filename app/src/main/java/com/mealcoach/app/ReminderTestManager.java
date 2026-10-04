@@ -9,7 +9,7 @@ import android.os.Build;
 
 public final class ReminderTestManager {
     private static final String PREFS="reminder_test_v4";
-    private static final String K_RUNNING="running",K_START="start",K_MASK="mask",K_LAST="last";
+    private static final String K_RUNNING="running",K_START="start",K_MASK="mask",K_LAST="last",K_FULLSCREEN5="fullscreen5",K_FULLSCREEN7="fullscreen7",K_SERVICE5="service5",K_SERVICE7="service7";
     private static final int BASE=8400;
     private static final long[] OFFSETS={0,30_000L,75_000L,120_000L,180_000L,240_000L,300_000L,360_000L};
 
@@ -20,7 +20,8 @@ public final class ReminderTestManager {
     public static void start(Context c){
         stop(c);
         long now=System.currentTimeMillis();
-        SharedPreferences.Editor e=prefs(c).edit().clear().putBoolean(K_RUNNING,true).putLong(K_START,now).putInt(K_MASK,0).putInt(K_LAST,0);
+        SharedPreferences.Editor e=prefs(c).edit().clear().putBoolean(K_RUNNING,true).putLong(K_START,now).putInt(K_MASK,0).putInt(K_LAST,0)
+                .putBoolean(K_FULLSCREEN5,false).putBoolean(K_FULLSCREEN7,false).putBoolean(K_SERVICE5,false).putBoolean(K_SERVICE7,false);
         for(int s=1;s<=7;s++)e.putLong("expected_"+s,now+OFFSETS[s]).putLong("delay_"+s,-1L);
         e.apply();
         for(int s=1;s<=7;s++)schedule(c,s,now+OFFSETS[s]);
@@ -72,6 +73,27 @@ public final class ReminderTestManager {
         }
         return 0L;
     }
+
+    public static void markFullScreenSeen(Context c,int stage){
+        SharedPreferences.Editor e=prefs(c).edit();
+        if(stage==5)e.putBoolean(K_FULLSCREEN5,true);
+        if(stage==7)e.putBoolean(K_FULLSCREEN7,true);
+        e.apply();
+        DiagnosticStore.log(c,"TEST_FULLSCREEN_SEEN","stage="+stage);
+    }
+
+    public static void markServiceStarted(Context c,int stage){
+        SharedPreferences.Editor e=prefs(c).edit();
+        if(stage==5)e.putBoolean(K_SERVICE5,true);
+        if(stage==7)e.putBoolean(K_SERVICE7,true);
+        e.apply();
+        DiagnosticStore.log(c,"TEST_SERVICE_STARTED","stage="+stage);
+    }
+
+    public static boolean fullScreen5(Context c){return prefs(c).getBoolean(K_FULLSCREEN5,false);}
+    public static boolean fullScreen7(Context c){return prefs(c).getBoolean(K_FULLSCREEN7,false);}
+    public static boolean service5(Context c){return prefs(c).getBoolean(K_SERVICE5,false);}
+    public static boolean service7(Context c){return prefs(c).getBoolean(K_SERVICE7,false);}
 
     public static long maxDelay(Context c){
         long max=0L;
