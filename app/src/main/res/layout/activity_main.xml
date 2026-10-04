@@ -585,6 +585,12 @@
                         android:textColor="@color/text"
                         android:textSize="15sp"
                         android:lineSpacingExtra="6dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:text="ЇЖА" android:textColor="@color/muted" android:textSize="11sp"/>
+                    <ProgressBar android:id="@+id/statsFoodProgress" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="8dp" android:max="3" android:progress="0" android:progressTint="@color/accent" android:progressBackgroundTint="@color/line"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="ВОДА" android:textColor="@color/muted" android:textSize="11sp"/>
+                    <ProgressBar android:id="@+id/statsWaterProgress" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="8dp" android:max="2500" android:progress="0" android:progressTint="@color/accent" android:progressBackgroundTint="@color/line"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="СЕРІЯ ДО НАСТУПНОГО АПГРЕЙДУ" android:textColor="@color/muted" android:textSize="11sp"/>
+                    <ProgressBar android:id="@+id/statsStreakProgress" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="8dp" android:max="7" android:progress="0" android:progressTint="#BE78FF" android:progressBackgroundTint="@color/line"/>
                 </LinearLayout>
 
                 <LinearLayout
