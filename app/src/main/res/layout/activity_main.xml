@@ -9,8 +9,8 @@
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
+        android:paddingLeft="18dp"
+        android:paddingRight="12dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -21,42 +21,51 @@
             android:layout_weight="1"
             android:text="В САШИНІ ТРУСІКІ"
             android:textColor="@color/text"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:fontFamily="sans-serif-medium"
-            android:letterSpacing="0.12"/>
+            android:letterSpacing="0.08"/>
 
         <TextView
             android:id="@+id/statusChip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="11dp"
+            android:paddingLeft="10dp"
             android:paddingTop="7dp"
-            android:paddingRight="11dp"
+            android:paddingRight="10dp"
             android:paddingBottom="7dp"
             android:background="@drawable/bg_secondary"
             android:text="НЕ ЗАПУЩЕНО"
             android:textColor="@color/muted"
-            android:textSize="11sp"
-            android:fontFamily="sans-serif-medium"/>
+            android:textSize="11sp"/>
+
+        <Button
+            android:id="@+id/settingsButton"
+            android:layout_width="48dp"
+            android:layout_height="46dp"
+            android:layout_marginLeft="7dp"
+            android:background="@drawable/bg_secondary"
+            android:text="⚙"
+            android:textColor="@color/text"
+            android:textSize="18sp"/>
     </LinearLayout>
 
     <FrameLayout
+        android:id="@+id/contentFrame"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
         <ScrollView
-            android:id="@+id/todayPage"
+            android:id="@+id/foodPage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true">
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
+                android:paddingLeft="18dp"
+                android:paddingRight="18dp"
                 android:paddingBottom="24dp">
 
                 <LinearLayout
@@ -65,7 +74,6 @@
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_card"
                     android:orientation="vertical">
-
                     <TextView
                         android:id="@+id/cycleLabel"
                         android:layout_width="wrap_content"
@@ -73,28 +81,24 @@
                         android:text="ДЕНЬ ЩЕ НЕ ЗАПУЩЕНО"
                         android:textColor="@color/muted"
                         android:textSize="13sp"
-                        android:fontFamily="sans-serif-medium"
-                        android:letterSpacing="0.04"/>
-
+                        android:fontFamily="sans-serif-medium"/>
                     <TextView
                         android:id="@+id/countdown"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="7dp"
                         android:text="ПОЧАТИ ДЕНЬ"
                         android:textColor="@color/text"
                         android:textSize="40sp"
                         android:fontFamily="sans-serif-medium"/>
-
                     <TextView
                         android:id="@+id/deadlineText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:text="Після пробудження запустимо перше вікно їжі"
+                        android:layout_marginTop="4dp"
+                        android:text="Після пробудження стартують їжа і вода"
                         android:textColor="@color/muted"
                         android:textSize="14sp"/>
-
                     <ProgressBar
                         android:id="@+id/cycleProgress"
                         style="?android:attr/progressBarStyleHorizontal"
@@ -102,48 +106,39 @@
                         android:layout_height="8dp"
                         android:layout_marginTop="18dp"
                         android:max="1000"
-                        android:progress="0"
                         android:progressTint="@color/accent"
                         android:progressBackgroundTint="@color/line"/>
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
+                        android:layout_marginTop="12dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
-
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:orientation="vertical">
-
                             <TextView
                                 android:id="@+id/mealDotsText"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="○  ○  ○"
                                 android:textColor="@color/accent"
-                                android:textSize="20sp"
-                                android:fontFamily="sans-serif-medium"/>
-
+                                android:textSize="20sp"/>
                             <TextView
                                 android:id="@+id/mealsText"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
                                 android:text="0 / 3+ прийомів"
                                 android:textColor="@color/text"
-                                android:textSize="13sp"
-                                android:fontFamily="sans-serif-medium"/>
+                                android:textSize="13sp"/>
                         </LinearLayout>
-
                         <TextView
                             android:id="@+id/snacksText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="ПЕРЕКУСИ  0"
+                            android:text="ПЕРЕКУСИ 0"
                             android:textColor="@color/muted"
                             android:textSize="13sp"/>
                     </LinearLayout>
@@ -153,36 +148,33 @@
                     android:id="@+id/flowHint"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
+                    android:layout_marginTop="12dp"
                     android:background="@drawable/bg_card"
-                    android:orientation="vertical">
-
+                    android:orientation="vertical"
+                    android:visibility="gone">
                     <TextView
                         android:id="@+id/flowTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="КОЛИ СІДАЄШ ЇСТИ"
                         android:textColor="@color/muted"
-                        android:textSize="12sp"
-                        android:fontFamily="sans-serif-medium"
-                        android:letterSpacing="0.06"/>
-
+                        android:textSize="12sp"/>
                     <TextView
                         android:id="@+id/flowSteps"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="9dp"
-                        android:text="1  Сфотографуй їжу\n2  Починай їсти\n3  Коли закінчиш — натисни «Закінчив їсти»"
+                        android:layout_marginTop="7dp"
+                        android:text="Фото → їжа → завершення"
                         android:textColor="@color/text"
                         android:textSize="15sp"
-                        android:lineSpacingExtra="7dp"/>
+                        android:lineSpacingExtra="6dp"/>
                 </LinearLayout>
 
                 <Button
                     android:id="@+id/primaryButton"
                     android:layout_width="match_parent"
-                    android:layout_height="68dp"
-                    android:layout_marginTop="14dp"
+                    android:layout_height="66dp"
+                    android:layout_marginTop="12dp"
                     android:background="@drawable/bg_primary"
                     android:text="Я ПРОКИНУВСЯ"
                     android:textAllCaps="false"
@@ -194,58 +186,62 @@
                     android:id="@+id/secondaryActions"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="9dp"
                     android:orientation="horizontal"
                     android:visibility="gone">
-
                     <Button
                         android:id="@+id/snackButton"
                         android:layout_width="0dp"
-                        android:layout_height="58dp"
+                        android:layout_height="56dp"
                         android:layout_weight="1"
-                        android:layout_marginRight="5dp"
+                        android:layout_marginRight="4dp"
                         android:background="@drawable/bg_secondary"
                         android:text="ПЕРЕКУС → ФОТО"
                         android:textAllCaps="false"
                         android:textColor="@color/text"
-                        android:textSize="14sp"/>
-
+                        android:textSize="13sp"/>
                     <Button
                         android:id="@+id/delayButton"
                         android:layout_width="0dp"
-                        android:layout_height="58dp"
+                        android:layout_height="56dp"
                         android:layout_weight="1"
-                        android:layout_marginLeft="5dp"
+                        android:layout_marginLeft="4dp"
                         android:background="@drawable/bg_secondary"
                         android:text="НЕ МОЖУ · +15 ХВ"
                         android:textAllCaps="false"
                         android:textColor="@color/text"
-                        android:textSize="14sp"
+                        android:textSize="13sp"
                         android:visibility="gone"/>
                 </LinearLayout>
 
+                <Button
+                    android:id="@+id/extendEatingButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="9dp"
+                    android:background="@drawable/bg_secondary"
+                    android:text="ЩЕ ЇМ +10 ХВ"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text"
+                    android:visibility="gone"/>
+
                 <LinearLayout
-                    android:id="@+id/lastEventCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
+                    android:layout_marginTop="12dp"
                     android:background="@drawable/bg_card"
                     android:orientation="vertical">
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="ОСТАННЯ ПОДІЯ"
                         android:textColor="@color/muted"
-                        android:textSize="12sp"
-                        android:fontFamily="sans-serif-medium"
-                        android:letterSpacing="0.06"/>
-
+                        android:textSize="12sp"/>
                     <TextView
                         android:id="@+id/lastEventText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="7dp"
                         android:text="Поки порожньо"
                         android:textColor="@color/text"
                         android:textSize="14sp"/>
@@ -257,35 +253,25 @@
                     android:layout_height="52dp"
                     android:layout_marginTop="12dp"
                     android:background="@drawable/bg_secondary"
-                    android:text="ЗАВЕРШИТИ ДЕНЬ / ЛЯГАЮ СПАТИ"
+                    android:text="ЛЯГАЮ СПАТИ / ЗАВЕРШИТИ ДЕНЬ"
                     android:textAllCaps="false"
                     android:textColor="@color/muted"
-                    android:textSize="13sp"
                     android:visibility="gone"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:gravity="center"
-                    android:text="3 прийоми — мінімум, не ліміт"
-                    android:textColor="@color/muted"
-                    android:textSize="12sp"/>
             </LinearLayout>
         </ScrollView>
 
         <ScrollView
-            android:id="@+id/historyPage"
+            android:id="@+id/waterPage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fillViewport="true"
             android:visibility="gone">
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
+                android:paddingLeft="18dp"
+                android:paddingRight="18dp"
                 android:paddingBottom="24dp">
 
                 <LinearLayout
@@ -294,36 +280,221 @@
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_card"
                     android:orientation="vertical">
-
                     <TextView
+                        android:id="@+id/waterStateText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="ІСТОРІЯ ХАРЧУВАННЯ"
+                        android:text="ДЕНЬ НЕ ЗАПУЩЕНО"
                         android:textColor="@color/muted"
-                        android:textSize="12sp"
-                        android:fontFamily="sans-serif-medium"
-                        android:letterSpacing="0.06"/>
-
+                        android:textSize="13sp"/>
                     <TextView
-                        android:id="@+id/historyText"
+                        android:id="@+id/waterTotalText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="0 / 2500 мл"
+                        android:textColor="@color/text"
+                        android:textSize="42sp"
+                        android:fontFamily="sans-serif-medium"/>
+                    <ProgressBar
+                        android:id="@+id/waterProgress"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="16dp"
+                        android:layout_marginTop="14dp"
+                        android:max="2500"
+                        android:progress="0"
+                        android:progressTint="#5AA9FF"
+                        android:progressBackgroundTint="@color/line"/>
+                    <TextView
+                        android:id="@+id/waterPaceText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Поки порожньо"
+                        android:text="Після «Я прокинувся» темп підлаштується під твій день."
+                        android:textColor="@color/muted"
+                        android:textSize="14sp"/>
+                    <TextView
+                        android:id="@+id/waterWarningText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="—"
                         android:textColor="@color/text"
-                        android:textSize="14sp"
-                        android:lineSpacingExtra="6dp"/>
+                        android:textSize="14sp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/waterQuickRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+                    <Button
+                        android:id="@+id/waterQuick1"
+                        android:layout_width="0dp"
+                        android:layout_height="58dp"
+                        android:layout_weight="1"
+                        android:layout_marginRight="4dp"
+                        android:background="@drawable/bg_secondary"
+                        android:text="+250"
+                        android:textColor="@color/text"/>
+                    <Button
+                        android:id="@+id/waterQuick2"
+                        android:layout_width="0dp"
+                        android:layout_height="58dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginRight="4dp"
+                        android:background="@drawable/bg_secondary"
+                        android:text="+350"
+                        android:textColor="@color/text"/>
+                    <Button
+                        android:id="@+id/waterQuick3"
+                        android:layout_width="0dp"
+                        android:layout_height="58dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="4dp"
+                        android:background="@drawable/bg_secondary"
+                        android:text="+500"
+                        android:textColor="@color/text"/>
                 </LinearLayout>
 
                 <Button
-                    android:id="@+id/exportButton"
+                    android:id="@+id/waterCustomButton"
                     android:layout_width="match_parent"
-                    android:layout_height="58dp"
-                    android:layout_marginTop="14dp"
-                    android:background="@drawable/bg_secondary"
-                    android:text="ЕКСПОРТ ЖУРНАЛУ В CSV"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="9dp"
+                    android:background="@drawable/bg_primary"
+                    android:text="ВВЕСТИ СВОЮ КІЛЬКІСТЬ"
                     android:textAllCaps="false"
-                    android:textColor="@color/text"/>
+                    android:textColor="@color/bg"/>
+
+                <Button
+                    android:id="@+id/waterUndoButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_secondary"
+                    android:text="СКАСУВАТИ ОСТАННЄ"
+                    android:textAllCaps="false"
+                    android:textColor="@color/muted"
+                    android:visibility="gone"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ОСТАННІ ЗАПИСИ"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp"/>
+                    <TextView
+                        android:id="@+id/waterHistoryText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Поки порожньо"
+                        android:textColor="@color/text"
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="5dp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <ScrollView
+            android:id="@+id/streakPage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:visibility="gone">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="18dp"
+                android:paddingRight="18dp"
+                android:paddingBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_horizontal"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/streakRankText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="СТАРТ"
+                        android:textColor="@color/muted"
+                        android:textSize="13sp"/>
+                    <TextView
+                        android:id="@+id/streakDaysText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="0 ДНІВ"
+                        android:textColor="@color/text"
+                        android:textSize="54sp"
+                        android:fontFamily="sans-serif-medium"/>
+                    <TextView
+                        android:id="@+id/streakSceneText"
+                        android:layout_width="match_parent"
+                        android:layout_height="110dp"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:text="·"
+                        android:textColor="@color/text"
+                        android:textSize="34sp"/>
+                    <TextView
+                        android:id="@+id/streakStatsText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Рекорд 0 • чистих днів 1/1"
+                        android:textColor="@color/muted"
+                        android:textSize="14sp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ДНІ СЕРІЇ"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp"/>
+                    <TextView
+                        android:id="@+id/streakMarksText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Ще немає завершених днів"
+                        android:textColor="@color/text"
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="5dp"/>
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/streakResetButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="62dp"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/bg_danger"
+                    android:text="ПОДРОЧИВ"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"/>
             </LinearLayout>
         </ScrollView>
 
@@ -332,14 +503,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone">
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:paddingBottom="24dp">
+                android:paddingLeft="18dp"
+                android:paddingRight="18dp"
+                android:paddingBottom="28dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -347,167 +517,118 @@
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_card"
                     android:orientation="vertical">
-
                     <TextView
-                        android:layout_width="match_parent"
+                        android:text="НАДІЙНІСТЬ НАГАДУВАНЬ"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="НАДІЙНІ НАГАДУВАННЯ"
                         android:textColor="@color/muted"
-                        android:textSize="12sp"
-                        android:fontFamily="sans-serif-medium"
-                        android:letterSpacing="0.06"/>
-
+                        android:textSize="12sp"/>
                     <TextView
+                        android:id="@+id/reliabilityText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="На Xiaomi краще один раз перевірити ці дозволи. Кнопки відкривають потрібні системні екрани."
+                        android:text="Перевіряю дозволи..."
                         android:textColor="@color/text"
-                        android:textSize="14sp"/>
-
-                    <Button
-                        android:id="@+id/notificationSettingsButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:layout_marginTop="12dp"
-                        android:background="@drawable/bg_secondary"
-                        android:text="СПОВІЩЕННЯ"
-                        android:textAllCaps="false"
-                        android:textColor="@color/text"/>
-
-                    <Button
-                        android:id="@+id/exactAlarmButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/bg_secondary"
-                        android:text="ТОЧНІ БУДИЛЬНИКИ"
-                        android:textAllCaps="false"
-                        android:textColor="@color/text"/>
-
-                    <Button
-                        android:id="@+id/batteryButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/bg_secondary"
-                        android:text="ОБМЕЖЕННЯ БАТАРЕЇ"
-                        android:textAllCaps="false"
-                        android:textColor="@color/text"/>
-
-                    <Button
-                        android:id="@+id/autostartButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/bg_secondary"
-                        android:text="АВТОЗАПУСК XIAOMI"
-                        android:textAllCaps="false"
-                        android:textColor="@color/text"/>
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="4dp"/>
+                    <Button android:id="@+id/notificationSettingsButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="10dp" android:background="@drawable/bg_secondary" android:text="СПОВІЩЕННЯ" android:textColor="@color/text"/>
+                    <Button android:id="@+id/exactAlarmButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="ТОЧНІ БУДИЛЬНИКИ" android:textColor="@color/text"/>
+                    <Button android:id="@+id/batteryButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="БАТАРЕЯ / БЕЗ ОБМЕЖЕНЬ" android:textColor="@color/text"/>
+                    <Button android:id="@+id/autostartButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="АВТОЗАПУСК XIAOMI" android:textColor="@color/text"/>
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
+                    android:layout_marginTop="12dp"
                     android:background="@drawable/bg_card"
                     android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ВОДА" android:textColor="@color/muted" android:textSize="12sp"/>
+                    <Button android:id="@+id/waterGoalSettingsButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="9dp" android:background="@drawable/bg_secondary" android:text="ЦІЛЬ: 2500 МЛ" android:textColor="@color/text"/>
+                    <Button android:id="@+id/waterQuickSettingsButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="ШВИДКІ КНОПКИ" android:textColor="@color/text"/>
+                </LinearLayout>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="ТЕСТ НАГАДУВАНЬ"
-                        android:textColor="@color/muted"
-                        android:textSize="12sp"
-                        android:fontFamily="sans-serif-medium"
-                        android:letterSpacing="0.06"/>
-
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ТЕСТ НАГАДУВАНЬ" android:textColor="@color/muted" android:textSize="12sp"/>
                     <TextView
                         android:id="@+id/testStatus"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="6 хвилин: кожна стадія ескалації проходить приблизно за хвилину."
+                        android:text="Не запущено"
                         android:textColor="@color/text"
-                        android:textSize="14sp"/>
-
-                    <Button
-                        android:id="@+id/testButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="58dp"
-                        android:layout_marginTop="12dp"
-                        android:background="@drawable/bg_primary"
-                        android:text="ЗАПУСТИТИ ТЕСТ · 6 ХВ"
-                        android:textAllCaps="false"
-                        android:textColor="@color/bg"
-                        android:fontFamily="sans-serif-medium"/>
-
-                    <Button
-                        android:id="@+id/diagnosticExportButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/bg_secondary"
-                        android:text="ЕКСПОРТ ДІАГНОСТИКИ"
-                        android:textAllCaps="false"
-                        android:textColor="@color/text"/>
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="4dp"/>
+                    <Button android:id="@+id/testButton" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="10dp" android:background="@drawable/bg_primary" android:text="ЗАПУСТИТИ ФОНОВИЙ ТЕСТ · 6 ХВ" android:textColor="@color/bg"/>
+                    <Button android:id="@+id/testNextButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="НАСТУПНИЙ ЕТАП ЗАРАЗ" android:textColor="@color/text"/>
+                    <Button android:id="@+id/diagnosticExportButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="ЕКСПОРТ ДІАГНОСТИКИ" android:textColor="@color/text"/>
                 </LinearLayout>
 
-                <TextView
+                <Button
+                    android:id="@+id/memeModeButton"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:gravity="center"
-                    android:text="В Сашині трусікі · v2"
-                    android:textColor="@color/muted"
-                    android:textSize="12sp"/>
+                    android:layout_height="52dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_secondary"
+                    android:text="RESET-АНІМАЦІЯ: МЕМНА"
+                    android:textColor="@color/text"/>
+
+                <Button
+                    android:id="@+id/closeSettingsButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_primary"
+                    android:text="ГОТОВО"
+                    android:textColor="@color/bg"/>
             </LinearLayout>
         </ScrollView>
     </FrameLayout>
 
     <LinearLayout
+        android:id="@+id/bottomNav"
         android:layout_width="match_parent"
         android:layout_height="66dp"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:paddingTop="7dp"
         android:paddingBottom="7dp"
         android:orientation="horizontal"
         android:background="@color/card">
-
         <Button
-            android:id="@+id/navToday"
+            android:id="@+id/navFood"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/bg_secondary"
-            android:text="СЬОГОДНІ"
-            android:textAllCaps="false"
+            android:text="ЇЖА"
             android:textColor="@color/accent"
-            android:textSize="12sp"/>
-
+            android:textSize="13sp"/>
         <Button
-            android:id="@+id/navHistory"
+            android:id="@+id/navWater"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_marginLeft="7dp"
             android:background="@drawable/bg_secondary"
-            android:text="ІСТОРІЯ"
-            android:textAllCaps="false"
+            android:text="ВОДА"
             android:textColor="@color/muted"
-            android:textSize="12sp"/>
-
+            android:textSize="13sp"/>
         <Button
-            android:id="@+id/navSettings"
+            android:id="@+id/navStreak"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_marginLeft="7dp"
             android:background="@drawable/bg_secondary"
-            android:text="НАЛАШТ."
-            android:textAllCaps="false"
+            android:text="СЕРІЯ"
             android:textColor="@color/muted"
-            android:textSize="12sp"/>
+            android:textSize="13sp"/>
     </LinearLayout>
 </LinearLayout>
