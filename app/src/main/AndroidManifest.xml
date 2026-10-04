@@ -31,6 +31,14 @@
             android:turnScreenOn="true"/>
 
         <activity
+            android:name=".ReminderTestActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"/>
+
+        <activity
             android:name=".BlockedActivity"
             android:excludeFromRecents="true"
             android:exported="false"/>
