@@ -10,6 +10,7 @@ public final class AppSettings {
     private static final String STREAK="streak_enabled";
     private static final String FOOD_SOUND="food_sound";
     private static final String WATER_SOUND="water_sound";
+    private static final String SETUP_DONE="setup_done";
 
     private AppSettings(){}
 
@@ -27,4 +28,6 @@ public final class AppSettings {
     public static String waterSound(Context c){return p(c).getString(WATER_SOUND,"");}
     public static void setFoodSound(Context c,String uri){p(c).edit().putString(FOOD_SOUND,uri==null?"":uri).apply();}
     public static void setWaterSound(Context c,String uri){p(c).edit().putString(WATER_SOUND,uri==null?"":uri).apply();}
+    public static boolean setupDone(Context c){return p(c).getBoolean(SETUP_DONE,false);}
+    public static void setSetupDone(Context c,boolean v){p(c).edit().putBoolean(SETUP_DONE,v).apply();}
 }
