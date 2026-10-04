@@ -18,6 +18,7 @@ public final class NotificationHelper {
     public static final String CH_ALARM="meal_alarm_v3";
     public static final String CH_WATER="water_v3";
     public static final String CH_EATING="eating_v3";
+    public static final String CH_TEST="test_v3";
     public static final int REMINDER_ID=501;
     public static final int WATER_ID=601;
     public static final int EATING_ID=701;
@@ -55,6 +56,9 @@ public final class NotificationHelper {
 
         nm.createNotificationChannel(prep); nm.createNotificationChannel(remind); nm.createNotificationChannel(urgent);
         nm.createNotificationChannel(alarm); nm.createNotificationChannel(waterCh); nm.createNotificationChannel(eating);
+        NotificationChannel test=new NotificationChannel(CH_TEST,"Тест нагадувань",NotificationManager.IMPORTANCE_HIGH);
+        test.enableVibration(true);
+        nm.createNotificationChannel(test);
     }
 
     public static void showReminder(Context c,int type){
@@ -111,6 +115,18 @@ public final class NotificationHelper {
         if(nm!=null){nm.cancel(WATER_ID);nm.notify(WATER_ID,b);}
     }
 
+    public static void showTestStage(Context c,int stage){
+        ensureChannels(c);
+        String[] names={"","-60 хв","-20 хв","Пора їсти","+15 хв","+30 хв","Фінальний рівень"};
+        String title="ТЕСТ · етап "+stage+"/6";
+        String body=names[Math.max(1,Math.min(6,stage))]+" отримано у фоні.";
+        Notification n=new Notification.Builder(c,CH_TEST).setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle(title).setContentText(body).setStyle(new Notification.BigTextStyle().bigText(body))
+                .setPriority(Notification.PRIORITY_HIGH).setAutoCancel(true).setContentIntent(openSettings(c)).build();
+        NotificationManager nm=(NotificationManager)c.getSystemService(Context.NOTIFICATION_SERVICE);
+        if(nm!=null)nm.notify(820+stage,n);
+    }
+
     public static Notification buildEscalationNotification(Context c,String mode){
         ensureChannels(c);
         boolean finalMode=AlarmService.MODE_FINAL.equals(mode);
@@ -128,6 +144,10 @@ public final class NotificationHelper {
     private static PendingIntent openApp(Context c){
         Intent i=new Intent(c,MainActivity.class);i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
         return PendingIntent.getActivity(c,700,i,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
+    }
+    private static PendingIntent openSettings(Context c){
+        Intent i=new Intent(c,MainActivity.class);i.putExtra("open_settings",true);i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        return PendingIntent.getActivity(c,702,i,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
     }
     private static PendingIntent openWater(Context c){
         Intent i=new Intent(c,MainActivity.class);i.putExtra("open_tab",1);i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
