@@ -158,6 +158,7 @@ public final class NotificationHelper {
                 .setColor((s==4||s==6)?Color.rgb(255,107,129):Color.rgb(89,209,181)).build();
         NotificationManager nm=(NotificationManager)c.getSystemService(Context.NOTIFICATION_SERVICE);
         if(nm!=null)nm.notify(820+s,n);
+        if(s==3||s==4||s==6)ReminderTestManager.markFoodSoundPath(c);
     }
 
     public static Notification buildEscalationNotification(Context c,String mode){
