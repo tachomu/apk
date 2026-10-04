@@ -107,6 +107,7 @@ public class AlarmService extends Service {
             volume=isFinalMode()?1.0f:0.15f;
             player.setVolume(volume,volume);
             player.start();
+            if(testStage==5||testStage==7)ReminderTestManager.markAlarmSoundStarted(this,testStage);
 
             handler.removeCallbacks(ramp);
             if(!isFinalMode())handler.postDelayed(ramp,10_000L);
