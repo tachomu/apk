@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">десятий</string>
+    <string name="accessibility_desc">Блокує вибрані соцмережі лише під час штрафного рівня нагадування про їжу.</string>
+</resources>
