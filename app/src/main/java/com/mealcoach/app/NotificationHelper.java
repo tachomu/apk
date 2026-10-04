@@ -149,7 +149,9 @@ public final class NotificationHelper {
         ensureChannels(c);
         String[] names={"","−60 хв","−20 хв","Пора їсти","+15 хв","+30 хв fullscreen","+45 хв + блок","FINAL alarm"};
         int s=Math.max(1,Math.min(7,stage));
-        String body=names[s]+" • подія реально доставлена Android.";
+        String body=s==6
+                ?"Штраф реально активний 30 секунд. Відкрий одну з заблокованих соцмереж — має повернути в «десятий»."
+                :names[s]+" • подія реально доставлена Android.";
         String channel=(s==2||s==3)?foodCh(c,false):((s==4||s==6)?foodCh(c,true):CH_TEST);
         Notification n=new Notification.Builder(c,channel).setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle("ТЕСТ · етап "+s+"/7").setContentText(body)
