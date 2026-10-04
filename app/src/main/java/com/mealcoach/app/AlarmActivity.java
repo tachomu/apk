@@ -23,6 +23,7 @@ public class AlarmActivity extends Activity {
             i.putExtra("force_camera", true);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(i);
+            finish();
         });
     }
 
