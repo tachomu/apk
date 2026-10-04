@@ -8,13 +8,10 @@ import android.content.SharedPreferences;
 import android.os.Build;
 
 public final class ReminderTestManager {
-    private static final String PREFS="reminder_test_v3";
-    private static final String K_RUNNING="running";
-    private static final String K_START="start";
-    private static final String K_MASK="mask";
-    private static final String K_LAST="last";
+    private static final String PREFS="reminder_test_v4";
+    private static final String K_RUNNING="running",K_START="start",K_MASK="mask",K_LAST="last";
     private static final int BASE=8400;
-    private static final long MIN=60_000L;
+    private static final long[] OFFSETS={0,30_000L,75_000L,120_000L,180_000L,240_000L,300_000L,360_000L};
 
     private ReminderTestManager(){}
 
@@ -23,14 +20,16 @@ public final class ReminderTestManager {
     public static void start(Context c){
         stop(c);
         long now=System.currentTimeMillis();
-        prefs(c).edit().putBoolean(K_RUNNING,true).putLong(K_START,now).putInt(K_MASK,0).putInt(K_LAST,0).apply();
-        for(int s=1;s<=6;s++)schedule(c,s,now+s*MIN);
-        DiagnosticStore.log(c,"TEST_START","background 6-minute test");
+        SharedPreferences.Editor e=prefs(c).edit().clear().putBoolean(K_RUNNING,true).putLong(K_START,now).putInt(K_MASK,0).putInt(K_LAST,0);
+        for(int s=1;s<=7;s++)e.putLong("expected_"+s,now+OFFSETS[s]).putLong("delay_"+s,-1L);
+        e.apply();
+        for(int s=1;s<=7;s++)schedule(c,s,now+OFFSETS[s]);
+        DiagnosticStore.log(c,"TEST_START","7 stages over 6 minutes");
     }
 
     public static void stop(Context c){
         AlarmManager am=(AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
-        if(am!=null)for(int s=1;s<=6;s++)am.cancel(pending(c,s));
+        if(am!=null)for(int s=1;s<=7;s++)am.cancel(pending(c,s));
         prefs(c).edit().putBoolean(K_RUNNING,false).apply();
     }
 
@@ -40,26 +39,50 @@ public final class ReminderTestManager {
     public static int lastStage(Context c){return prefs(c).getInt(K_LAST,0);}
 
     public static void mark(Context c,int stage){
+        if(stage<1||stage>7)return;
         SharedPreferences p=prefs(c);
         int mask=p.getInt(K_MASK,0)|(1<<(stage-1));
-        SharedPreferences.Editor e=p.edit().putInt(K_MASK,mask).putInt(K_LAST,stage);
-        if(stage>=6)e.putBoolean(K_RUNNING,false);
+        long expected=p.getLong("expected_"+stage,System.currentTimeMillis());
+        long delay=Math.max(0L,System.currentTimeMillis()-expected);
+        SharedPreferences.Editor e=p.edit().putInt(K_MASK,mask).putInt(K_LAST,Math.max(stage,p.getInt(K_LAST,0))).putLong("delay_"+stage,delay);
+        if(stage>=7)e.putBoolean(K_RUNNING,false);
         e.apply();
-        DiagnosticStore.log(c,"TEST_STAGE_RECEIVED","stage="+stage);
+        DiagnosticStore.log(c,"TEST_STAGE_RECEIVED","stage="+stage+" delay_ms="+delay);
     }
 
     public static void nextNow(Context c){
-        int next=Math.min(6,lastStage(c)+1);
-        if(next<=0)next=1;
+        int next=1;
+        int m=mask(c);
+        while(next<=7&&(m&(1<<(next-1)))!=0)next++;
+        if(next>7)return;
+        cancelStage(c,next);
+        long now=System.currentTimeMillis();
+        prefs(c).edit().putLong("expected_"+next,now).apply();
         mark(c,next);
         NotificationHelper.showTestStage(c,next);
     }
 
     public static long nextRemaining(Context c){
         if(!running(c))return 0L;
-        int next=Math.min(6,lastStage(c)+1);
-        long target=startTime(c)+next*MIN;
-        return Math.max(0L,target-System.currentTimeMillis());
+        int m=mask(c);
+        for(int s=1;s<=7;s++){
+            if((m&(1<<(s-1)))==0){
+                return Math.max(0L,prefs(c).getLong("expected_"+s,System.currentTimeMillis())-System.currentTimeMillis());
+            }
+        }
+        return 0L;
+    }
+
+    public static long maxDelay(Context c){
+        long max=0L;
+        SharedPreferences p=prefs(c);
+        for(int s=1;s<=7;s++)max=Math.max(max,p.getLong("delay_"+s,-1L));
+        return max;
+    }
+
+    public static String stageName(int s){
+        String[] n={"","−60","−20","пора","+15","+30 fullscreen","+45 блок","FINAL"};
+        return n[Math.max(1,Math.min(7,s))];
     }
 
     private static void schedule(Context c,int stage,long at){
@@ -68,6 +91,12 @@ public final class ReminderTestManager {
         PendingIntent pi=pending(c,stage);
         if(Build.VERSION.SDK_INT>=31&&!am.canScheduleExactAlarms())am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,at,pi);
         else am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,at,pi);
+        DiagnosticStore.log(c,"TEST_STAGE_SCHEDULED","stage="+stage+" at="+at);
+    }
+
+    private static void cancelStage(Context c,int stage){
+        AlarmManager am=(AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
+        if(am!=null)am.cancel(pending(c,stage));
     }
 
     private static PendingIntent pending(Context c,int stage){
