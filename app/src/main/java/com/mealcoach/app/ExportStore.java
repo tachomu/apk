@@ -21,7 +21,7 @@ public final class ExportStore {
     private ExportStore(){}
 
     public static boolean exportAll(Context c,Uri destination){
-        String[] names={"meal_log.csv","water_log.csv","day_summaries.csv","mealcoach_debug.log"};
+        String[] names={"meal_log.csv","water_log.csv","day_summaries.csv","desyatyi_debug.log"};
 
         try(OutputStream raw=c.getContentResolver().openOutputStream(destination,"w");
             ZipOutputStream zip=new ZipOutputStream(raw)){
@@ -58,7 +58,7 @@ public final class ExportStore {
                     "meal_log.csv — історія їжі, час, фото URI\n"+
                     "water_log.csv — окрема історія води\n"+
                     "day_summaries.csv — wake-дні\n"+
-                    "mealcoach_debug.log — технічна діагностика нагадувань\n"+
+                    "desyatyi_debug.log — технічна діагностика нагадувань\n"+
                     "photos/ — реальні фото їжі для ручного аналізу в ChatGPT\n"+
                     "photo_index.csv — відповідність URI до файлу фото\n"+
                     "streak_summary.txt — серія та архів\n";
