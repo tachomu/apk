@@ -59,8 +59,9 @@ public final class ReminderTestManager {
         cancelStage(c,next);
         long now=System.currentTimeMillis();
         prefs(c).edit().putLong("expected_"+next,now).apply();
-        mark(c,next);
-        NotificationHelper.showTestStage(c,next);
+        Intent fire=new Intent(c,ReminderTestReceiver.class);
+        fire.putExtra("stage",next);
+        c.sendBroadcast(fire);
     }
 
     public static long nextRemaining(Context c){
