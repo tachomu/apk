@@ -779,13 +779,14 @@ public class MainActivity extends Activity {
     }
 
     private void renderSettings(){
-        boolean notif=Build.VERSION.SDK_INT<33||checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)==PackageManager.PERMISSION_GRANTED;
+        NotificationManager nm=(NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        boolean notifPermission=Build.VERSION.SDK_INT<33||checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)==PackageManager.PERMISSION_GRANTED;
+        boolean notif=notifPermission&&(nm==null||nm.areNotificationsEnabled());
         boolean exact=AlarmScheduler.canExact(this);
 
         PowerManager pm=(PowerManager)getSystemService(POWER_SERVICE);
         boolean battery=pm!=null&&pm.isIgnoringBatteryOptimizations(getPackageName());
 
-        NotificationManager nm=(NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         boolean full=Build.VERSION.SDK_INT<34||(nm!=null&&nm.canUseFullScreenIntent());
         boolean access=isAccessibilityEnabled();
 
