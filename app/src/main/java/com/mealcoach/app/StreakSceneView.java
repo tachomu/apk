@@ -64,6 +64,20 @@ public class StreakSceneView extends View {
             p.setColor(0xFFFFD166);c.drawCircle(w*0.10f,h*0.56f,24,p);c.drawRect(w*0.09f,h*0.58f,w*0.11f,h*0.66f,p);
         }
 
+        // Every completed day leaves a small light tile, so progress changes daily.
+        int tiles=Math.min(days,30);
+        if(tiles>0){
+            float startX=w*0.08f;
+            float endX=w*0.92f;
+            float step=(endX-startX)/30f;
+            p.setStyle(Paint.Style.FILL);
+            for(int i=0;i<tiles;i++){
+                p.setColor(i<7?0xFF59D1B5:i<14?0xFF7AC7FF:i<21?0xFF9B7BFF:0xFFFFD166);
+                float x=startX+i*step;
+                c.drawRoundRect(new RectF(x,h*0.93f,x+step*0.65f,h*0.965f),5,5,p);
+            }
+        }
+
         if(days==0){
             p.setColor(0xFF94A1AE);p.setTextAlign(Paint.Align.CENTER);p.setTextSize(34);
             c.drawText("Почни будувати серію",w/2,h/2,p);
