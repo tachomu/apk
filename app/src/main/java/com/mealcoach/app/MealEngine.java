@@ -51,6 +51,7 @@ public final class MealEngine {
         if(!p.getBoolean(K_DAY,false))return;
         resetFoodSignals(c);
         long now=System.currentTimeMillis();
+        BehaviorLearning.recordMealStart(c,p.getLong(K_PREF,0L),now);
         int late=p.getInt(K_LATE_MEALS,0);
         if(now>p.getLong(K_PREF,Long.MAX_VALUE))late++;
         p.edit().putBoolean(K_EATING,true).putLong(K_EATING_START,now).putInt(K_EATING_EXT,0).putInt(K_LATE_MEALS,late).apply();
