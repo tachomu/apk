@@ -836,6 +836,7 @@ public class MainActivity extends Activity {
         b.append("\nAlarm audio +30 ").append(mark(ReminderTestManager.sound5(this)));
         b.append("\nFull-screen +30 ").append(mark(ReminderTestManager.fullScreen5(this)));
         b.append("\nAccessibility штраф ").append(mark(isAccessibilityEnabled()));
+        b.append("\nШтраф реально активувався ").append(mark(ReminderTestManager.penaltyArmed(this)));
         b.append("\nForeground FINAL ").append(mark(ReminderTestManager.service7(this)));
         b.append("\nAlarm audio FINAL ").append(mark(ReminderTestManager.sound7(this)));
         b.append("\nFull-screen FINAL ").append(mark(ReminderTestManager.fullScreen7(this)));
