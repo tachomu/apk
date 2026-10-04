@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:gravity="center"
-        android:text="Сигнал припиниться тільки після того, як ти відкриєш MealCoach, сфотографуєш їжу і почнеш прийом."
+        android:text="Сигнал припиниться тільки після того, як ти відкриєш «В Сашині трусікі», сфотографуєш їжу і почнеш прийом."
         android:textColor="@color/muted"
         android:textSize="16sp"/>
 
