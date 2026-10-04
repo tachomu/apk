@@ -52,7 +52,7 @@ public class MainActivity extends Activity {
     private TextView flowTitle,flowSteps,lastEventText,waterStateText,waterTotalText,waterPaceText,waterWarningText,waterHistoryText;
     private TextView streakRankText,streakDaysText,streakStatsText,streakNextText,streakBadgesText,streakMarksText,streakArchiveText;
     private TextView reliabilityText,testStatus,currentStatsText,historyStatsText;
-    private ProgressBar cycleProgress,waterProgress;
+    private ProgressBar cycleProgress,waterProgress,statsFoodProgress,statsWaterProgress,statsStreakProgress;
     private StreakSceneView streakSceneView;
 
     private Button primaryButton,snackButton,delayButton,extendEatingButton,sleepButton;
@@ -148,6 +148,9 @@ public class MainActivity extends Activity {
 
         cycleProgress=findViewById(R.id.cycleProgress);
         waterProgress=findViewById(R.id.waterProgress);
+        statsFoodProgress=findViewById(R.id.statsFoodProgress);
+        statsWaterProgress=findViewById(R.id.statsWaterProgress);
+        statsStreakProgress=findViewById(R.id.statsStreakProgress);
 
         primaryButton=findViewById(R.id.primaryButton);
         snackButton=findViewById(R.id.snackButton);
@@ -632,6 +635,14 @@ public class MainActivity extends Activity {
                 "Серія: "+streak+" "+daysWord(streak)+" • рекорд "+StreakEngine.best(this)+"\n"+
                 "Поточний wake-день: "+active
         );
+        statsFoodProgress.setMax(3);
+        statsFoodProgress.setProgress(Math.min(3,meals));
+        statsWaterProgress.setMax(Math.max(1,goal));
+        statsWaterProgress.setProgress(Math.min(goal,water));
+        int nextMilestone=StreakEngine.nextMilestoneValue(this);
+        statsStreakProgress.setMax(Math.max(1,nextMilestone));
+        statsStreakProgress.setProgress(Math.min(streak,nextMilestone));
+
         historyStatsText.setText(DaySummaryStore.stats(this));
     }
 
