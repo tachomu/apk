@@ -838,7 +838,8 @@ public class MainActivity extends Activity {
             AlarmService.stop(this);
             PenaltyManager.setBlocked(this,false);
         }else{
-            AlarmScheduler.scheduleCurrent(this);
+            if(p.getBoolean(MealEngine.K_DAY,false))MealEngine.resumeFoodModule(this);
+            else AlarmScheduler.scheduleCurrent(this);
         }
         renderAll();
     }
