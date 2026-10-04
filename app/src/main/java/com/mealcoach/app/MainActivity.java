@@ -78,6 +78,7 @@ public class MainActivity extends Activity {
     private int currentTab=0;
     private boolean overlayOpen=false;
     private float touchDownX,touchDownY;
+    private boolean swipeGesture=false;
     private long undoHideAt=0L;
 
     private final Runnable ticker=new Runnable(){
@@ -457,14 +458,28 @@ public class MainActivity extends Activity {
 
     @Override public boolean dispatchTouchEvent(MotionEvent e){
         if(e.getAction()==MotionEvent.ACTION_DOWN){
-            touchDownX=e.getX();touchDownY=e.getY();
-        }else if(e.getAction()==MotionEvent.ACTION_UP&&!overlayOpen){
+            touchDownX=e.getX();
+            touchDownY=e.getY();
+            swipeGesture=false;
+        }else if(e.getAction()==MotionEvent.ACTION_MOVE&&!overlayOpen){
             float dx=e.getX()-touchDownX;
             float dy=e.getY()-touchDownY;
-            if(Math.abs(dx)>150&&Math.abs(dx)>Math.abs(dy)*1.45f){
+            if(Math.abs(dx)>80&&Math.abs(dx)>Math.abs(dy)*1.45f)swipeGesture=true;
+        }else if(e.getAction()==MotionEvent.ACTION_UP&&!overlayOpen&&swipeGesture){
+            float dx=e.getX()-touchDownX;
+            float dy=e.getY()-touchDownY;
+
+            MotionEvent cancel=MotionEvent.obtain(e);
+            cancel.setAction(MotionEvent.ACTION_CANCEL);
+            super.dispatchTouchEvent(cancel);
+            cancel.recycle();
+
+            if(Math.abs(dx)>130&&Math.abs(dx)>Math.abs(dy)*1.35f){
                 if(dx<0)showTabAnimated((currentTab+1)%3,1);
                 else showTabAnimated((currentTab+2)%3,-1);
             }
+            swipeGesture=false;
+            return true;
         }
         return super.dispatchTouchEvent(e);
     }
