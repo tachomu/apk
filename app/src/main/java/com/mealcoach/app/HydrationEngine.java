@@ -147,8 +147,14 @@ public final class HydrationEngine {
 
     public static int status(Context c){
         int expected=expectedNow(c);
-        if(expected<250)return GREEN;
-        double ratio=total(c)/(double)Math.max(1,expected);
+        int actual=total(c);
+        if(expected<150)return GREEN;
+
+        double ratio=actual/(double)Math.max(1,expected);
+        if(expected<350){
+            return ratio>=0.75?GREEN:ORANGE;
+        }
+
         if(ratio>=0.90)return GREEN;
         if(ratio>=0.62)return ORANGE;
         return RED;
