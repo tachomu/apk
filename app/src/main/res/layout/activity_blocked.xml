@@ -6,6 +6,7 @@
     android:orientation="vertical"
     android:padding="28dp">
     <TextView
+        android:id="@+id/blockMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
