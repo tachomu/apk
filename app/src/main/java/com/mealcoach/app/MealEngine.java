@@ -13,6 +13,7 @@ public final class MealEngine {
     public static final String K_EATING = "eating";
     public static final String K_EATING_START = "eating_start";
     public static final String K_EATING_EXT = "eating_ext";
+    public static final String K_WAKE_TIME = "wake_time";
     public static final String K_START = "cycle_start";
     public static final String K_PREF = "preferred";
     public static final String K_DEADLINE = "deadline";
@@ -36,7 +37,7 @@ public final class MealEngine {
                 .putBoolean(K_DAY,true).putBoolean(K_TEST,false)
                 .putInt(K_MEALS,0).putInt(K_SNACKS,0).putInt(K_CONSEC_SNACKS,0)
                 .putBoolean(K_EATING,false).putInt(K_EATING_EXT,0).putInt(K_LATE_MEALS,0).putInt(K_AUTO_MEALS,0)
-                .putLong(K_START,now).putLong(K_PREF,now+30*MIN).putLong(K_DEADLINE,now+60*MIN)
+                .putLong(K_WAKE_TIME,now).putLong(K_START,now).putLong(K_PREF,now+30*MIN).putLong(K_DEADLINE,now+60*MIN)
                 .putBoolean(K_FIRST,true).putInt(K_DELAY_USED,0).apply();
         HydrationEngine.wake(c);
         LogStore.log(c,"WAKE",0,0,"","");
@@ -141,7 +142,7 @@ public final class MealEngine {
         int meals=p.getInt(K_MEALS,0), snacks=p.getInt(K_SNACKS,0);
         long now=System.currentTimeMillis();
         DaySummaryStore.closeDay(c,
-                HydrationEngine.wakeTime(c),
+                p.getLong(K_WAKE_TIME,now),
                 now,
                 meals,
                 snacks,
