@@ -35,14 +35,15 @@ public final class AlarmScheduler {
 
         // The first meal is only 30 minutes after wake, so a -60 warning is impossible.
         if(!first)scheduleIfFuture(c,PREP_60,pref-60*MIN,dead,now);
-        scheduleIfFuture(c,PREP_20,pref-20*MIN,dead,now);
+        int prepLead=BehaviorLearning.prepLeadMinutes(c);
+        scheduleIfFuture(c,PREP_20,pref-prepLead*MIN,dead,now);
         scheduleIfFuture(c,PREFERRED,pref,dead,now);
         scheduleIfFuture(c,LATE_15,pref+15*MIN,dead,now);
         scheduleIfFuture(c,LATE_30,pref+30*MIN,dead,now);
         scheduleIfFuture(c,LATE_45,pref+45*MIN,dead,now);
         scheduleOne(c,FINAL,dead,now,true);
 
-        DiagnosticStore.log(c,"FOOD_SCHEDULE_COMPLETE","first="+first+" pref="+pref+" deadline="+dead+" exact="+canExact(c));
+        DiagnosticStore.log(c,"FOOD_SCHEDULE_COMPLETE","first="+first+" pref="+pref+" deadline="+dead+" prep_lead="+prepLead+" exact="+canExact(c));
     }
 
     private static void scheduleIfFuture(Context c,int type,long at,long deadline,long now){
