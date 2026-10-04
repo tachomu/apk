@@ -16,7 +16,20 @@ public final class StreakEngine {
 
     private StreakEngine(){}
 
-    public static SharedPreferences prefs(Context c){return c.getSharedPreferences(PREFS,Context.MODE_PRIVATE);}
+    public static SharedPreferences prefs(Context c){
+        SharedPreferences p=c.getSharedPreferences(PREFS,Context.MODE_PRIVATE);
+        if(!p.getBoolean("_migrated",false)){
+            SharedPreferences old=c.getSharedPreferences("streak_v3",Context.MODE_PRIVATE);
+            SharedPreferences.Editor e=p.edit();
+            if(old.contains("start"))e.putLong(K_START,old.getLong("start",System.currentTimeMillis()));
+            if(old.contains("first"))e.putLong(K_FIRST,old.getLong("first",System.currentTimeMillis()));
+            if(old.contains("best"))e.putInt(K_BEST,old.getInt("best",0));
+            if(old.contains("resets"))e.putString(K_RESETS,old.getString("resets",""));
+            if(old.contains("meme"))e.putBoolean(K_MEME,old.getBoolean("meme",true));
+            e.putBoolean("_migrated",true).apply();
+        }
+        return p;
+    }
 
     public static void ensure(Context c){
         SharedPreferences p=prefs(c);
