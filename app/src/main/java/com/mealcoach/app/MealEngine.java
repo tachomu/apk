@@ -20,6 +20,8 @@ public final class MealEngine {
     public static final String K_DELAY_USED = "delay_used";
     public static final String K_PHOTO = "photo_uri";
     public static final String K_TEST = "test_mode";
+    public static final String K_LATE_MEALS = "late_meals";
+    public static final String K_AUTO_MEALS = "auto_meals";
     private static final long MIN = 60_000L;
 
     private MealEngine(){}
@@ -28,11 +30,12 @@ public final class MealEngine {
 
     public static void wake(Context c){
         resetFoodSignals(c);
+        PenaltyManager.setBlocked(c,false);
         long now=System.currentTimeMillis();
         prefs(c).edit().clear()
                 .putBoolean(K_DAY,true).putBoolean(K_TEST,false)
                 .putInt(K_MEALS,0).putInt(K_SNACKS,0).putInt(K_CONSEC_SNACKS,0)
-                .putBoolean(K_EATING,false).putInt(K_EATING_EXT,0)
+                .putBoolean(K_EATING,false).putInt(K_EATING_EXT,0).putInt(K_LATE_MEALS,0).putInt(K_AUTO_MEALS,0)
                 .putLong(K_START,now).putLong(K_PREF,now+30*MIN).putLong(K_DEADLINE,now+60*MIN)
                 .putBoolean(K_FIRST,true).putInt(K_DELAY_USED,0).apply();
         HydrationEngine.wake(c);
@@ -46,7 +49,9 @@ public final class MealEngine {
         if(!p.getBoolean(K_DAY,false))return;
         resetFoodSignals(c);
         long now=System.currentTimeMillis();
-        p.edit().putBoolean(K_EATING,true).putLong(K_EATING_START,now).putInt(K_EATING_EXT,0).apply();
+        int late=p.getInt(K_LATE_MEALS,0);
+        if(now>p.getLong(K_PREF,Long.MAX_VALUE))late++;
+        p.edit().putBoolean(K_EATING,true).putLong(K_EATING_START,now).putInt(K_EATING_EXT,0).putInt(K_LATE_MEALS,late).apply();
         LogStore.log(c,"SIT_EAT",p.getInt(K_MEALS,0),p.getInt(K_SNACKS,0),"",p.getString(K_PHOTO,""));
         DiagnosticStore.log(c,"SIT_EAT","auto-finish in 30m");
         EatingScheduler.schedule(c,now,0);
@@ -75,9 +80,13 @@ public final class MealEngine {
         long now=System.currentTimeMillis();
         String photo=p.getString(K_PHOTO,"");
         String duration=started>0?"duration_min="+Math.max(0,(now-started)/MIN):"";
-        if(automatic)duration+=(duration.isEmpty()?"":";")+"auto_finish=true";
+        if(automatic){
+            duration+=(duration.isEmpty()?"":";")+"auto_finish=true";
+            p.edit().putInt(K_AUTO_MEALS,p.getInt(K_AUTO_MEALS,0)+1).apply();
+        }
 
         resetFoodSignals(c);
+        PenaltyManager.setBlocked(c,false);
         EatingScheduler.cancel(c);
 
         p.edit().putInt(K_MEALS,meals).putInt(K_CONSEC_SNACKS,0)
@@ -126,7 +135,17 @@ public final class MealEngine {
     public static void sleep(Context c){
         SharedPreferences p=prefs(c);
         int meals=p.getInt(K_MEALS,0), snacks=p.getInt(K_SNACKS,0);
-        resetFoodSignals(c); EatingScheduler.cancel(c); HydrationEngine.sleep(c);
+        long now=System.currentTimeMillis();
+        DaySummaryStore.closeDay(c,
+                HydrationEngine.wakeTime(c),
+                now,
+                meals,
+                snacks,
+                HydrationEngine.total(c),
+                HydrationEngine.goal(c),
+                p.getInt(K_LATE_MEALS,0),
+                p.getInt(K_AUTO_MEALS,0));
+        resetFoodSignals(c); EatingScheduler.cancel(c); HydrationEngine.sleep(c); PenaltyManager.setBlocked(c,false);
         p.edit().putBoolean(K_DAY,false).putBoolean(K_EATING,false).putLong(K_EATING_START,0L)
                 .putInt(K_EATING_EXT,0).putString(K_PHOTO,"").apply();
         LogStore.log(c,"SLEEP",meals,snacks,"","");
