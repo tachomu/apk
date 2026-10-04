@@ -536,7 +536,8 @@ public class MainActivity extends Activity {
         primaryButton.setText("СФОТОГРАФУВАТИ ЇЖУ → ПОЧАТИ");
         secondaryActions.setVisibility(View.VISIBLE);
         extendEatingButton.setVisibility(View.GONE);
-        delayButton.setVisibility(now>=pref?View.VISIBLE:View.GONE);
+        int delayUsed=p.getInt(MealEngine.K_DELAY_USED,0);
+        delayButton.setVisibility(now>=pref&&now<pref+30L*60_000L&&delayUsed<2?View.VISIBLE:View.GONE);
 
         int prog=(int)Math.max(0,Math.min(1000,((now-start)*1000L)/Math.max(1,dead-start)));
         cycleProgress.setProgress(prog);
