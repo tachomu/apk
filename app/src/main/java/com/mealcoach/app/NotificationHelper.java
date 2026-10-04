@@ -81,7 +81,7 @@ public final class NotificationHelper {
             case AlarmScheduler.PREP_20:
                 title="Через 20 хв — їжа";
                 body=BehaviorLearning.prep20Text(c);
-                channel=CH_PREP;break;
+                channel=foodCh(c,false);break;
             case AlarmScheduler.PREFERRED:
                 title="Пора їсти";
                 body="Сфотографуй їжу й починай прийом.";
@@ -150,7 +150,7 @@ public final class NotificationHelper {
         String[] names={"","−60 хв","−20 хв","Пора їсти","+15 хв","+30 хв fullscreen","+45 хв + блок","FINAL alarm"};
         int s=Math.max(1,Math.min(7,stage));
         String body=names[s]+" • подія реально доставлена Android.";
-        String channel=(s==3)?foodCh(c,false):((s==4||s==6)?foodCh(c,true):CH_TEST);
+        String channel=(s==2||s==3)?foodCh(c,false):((s==4||s==6)?foodCh(c,true):CH_TEST);
         Notification n=new Notification.Builder(c,channel).setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle("ТЕСТ · етап "+s+"/7").setContentText(body)
                 .setStyle(new Notification.BigTextStyle().bigText(body))
@@ -158,7 +158,7 @@ public final class NotificationHelper {
                 .setColor((s==4||s==6)?Color.rgb(255,107,129):Color.rgb(89,209,181)).build();
         NotificationManager nm=(NotificationManager)c.getSystemService(Context.NOTIFICATION_SERVICE);
         if(nm!=null)nm.notify(820+s,n);
-        if(s==3||s==4||s==6)ReminderTestManager.markFoodSoundPath(c);
+        if(s==2||s==3||s==4||s==6)ReminderTestManager.markFoodSoundPath(c);
     }
 
     public static Notification buildEscalationNotification(Context c,String mode){
