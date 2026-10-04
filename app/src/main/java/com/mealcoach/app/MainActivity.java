@@ -412,8 +412,11 @@ public class MainActivity extends Activity {
 
     private void updateNav(){
         navFood.setTextColor(getColor(currentTab==0?R.color.accent:R.color.muted));
-        navWater.setTextColor(currentTab==1?getColor(R.color.accent):getColor(R.color.muted));
+        navWater.setTextColor(currentTab==1?Color.rgb(90,169,255):getColor(R.color.muted));
         navStreak.setTextColor(currentTab==2?Color.rgb(190,120,255):getColor(R.color.muted));
+        navFood.setAlpha(currentTab==0?1f:0.62f);
+        navWater.setAlpha(currentTab==1?1f:0.62f);
+        navStreak.setAlpha(currentTab==2?1f:0.62f);
         screenTitle.setText(currentTab==0?"ДЕСЯТИЙ · ЇЖА":currentTab==1?"ДЕСЯТИЙ · ВОДА":"ДЕСЯТИЙ · СЕРІЯ");
     }
 
@@ -521,6 +524,7 @@ public class MainActivity extends Activity {
             countdown.setTextColor(getColor(R.color.muted));
             deadlineText.setText("Увімкни модуль у налаштуваннях.");
             cycleProgress.setProgress(0);
+            cycleProgress.setProgressTintList(ColorStateList.valueOf(getColor(R.color.muted)));
             flowHint.setVisibility(View.GONE);
             secondaryActions.setVisibility(View.GONE);
             extendEatingButton.setVisibility(View.GONE);
@@ -540,6 +544,7 @@ public class MainActivity extends Activity {
             countdown.setTextColor(getColor(R.color.text));
             deadlineText.setText("Пробудження запускає їжу і воду");
             cycleProgress.setProgress(0);
+            cycleProgress.setProgressTintList(ColorStateList.valueOf(getColor(R.color.accent)));
             flowHint.setVisibility(View.GONE);
             secondaryActions.setVisibility(View.GONE);
             extendEatingButton.setVisibility(View.GONE);
@@ -564,6 +569,7 @@ public class MainActivity extends Activity {
             countdown.setTextColor(getColor(R.color.accent));
             deadlineText.setText("Автозавершення через "+formatDuration(Math.max(0,es+(30L+10L*ext)*60_000L-now)));
             cycleProgress.setProgress(1000);
+            cycleProgress.setProgressTintList(ColorStateList.valueOf(getColor(R.color.accent)));
             flowHint.setVisibility(View.VISIBLE);
             flowTitle.setText("ЗАРАЗ ТИ ЇСИ");
             flowSteps.setText("Через 20 хв буде «Ти ще їси?». Через 30 хв — автоматичне завершення.");
@@ -629,6 +635,7 @@ public class MainActivity extends Activity {
         );
 
         if(!enabled){
+            waterProgress.setProgressTintList(ColorStateList.valueOf(getColor(R.color.muted)));
             waterStateText.setText("МОДУЛЬ ВОДИ ВИМКНЕНО");
             waterStateText.setTextColor(getColor(R.color.muted));
             waterPaceText.setText("Увімкни модуль у налаштуваннях.");
@@ -642,6 +649,7 @@ public class MainActivity extends Activity {
 
         waterCustomButton.setEnabled(true);
         if(!active){
+            waterProgress.setProgressTintList(ColorStateList.valueOf(Color.rgb(90,169,255)));
             waterStateText.setText("ДЕНЬ НЕ ЗАПУЩЕНО");
             waterStateText.setTextColor(getColor(R.color.muted));
             waterPaceText.setText("Графік прив'язаний до фактичного пробудження, а не до 00:00.");
@@ -666,7 +674,10 @@ public class MainActivity extends Activity {
         waterWarningText.setText(HydrationEngine.warning(this)+"\n\n"+HydrationEngine.nextPlan(this));
         waterPaceText.setText("Орієнтир зараз ≈ "+expected+" мл • прогноз ≈ "+projected+" мл\nНайдовша пауза сьогодні: "+HydrationEngine.longestGapMinutes(this)+" хв • план вчиться з твоїх wake-днів.");
 
-        if(!overlayOpen&&currentTab==1){statusChip.setText(HydrationEngine.statusLabel(this));statusChip.setTextColor(color);}
+        if(!overlayOpen&&currentTab==1){
+            statusChip.setText(st==HydrationEngine.GREEN?"ВОДА ОК":st==HydrationEngine.ORANGE?"ВІДСТАЄШ":"МАЛО ВОДИ");
+            statusChip.setTextColor(color);
+        }
     }
 
     private void renderStreak(){
@@ -685,7 +696,7 @@ public class MainActivity extends Activity {
         streakResetButton.setVisibility(enabled?View.VISIBLE:View.GONE);
 
         if(!overlayOpen&&currentTab==2){
-            statusChip.setText(enabled?StreakEngine.rank(this):"OFF");
+            statusChip.setText(enabled?d+" ДН.":"OFF");
             statusChip.setTextColor(enabled?Color.rgb(190,120,255):getColor(R.color.muted));
         }
     }
