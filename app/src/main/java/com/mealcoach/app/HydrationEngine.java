@@ -118,6 +118,15 @@ public final class HydrationEngine {
         return "ГІДРАЦІЯ ХОРОША";
     }
 
+    public static String nextPlan(Context c){
+        int s=status(c);
+        int deficit=Math.max(0,expectedNow(c)-total(c));
+        if(s==GREEN)return "Наступний м'який орієнтир: "+quick(c,1)+" мл приблизно протягом 60–90 хв.";
+        int suggested=Math.max(150,Math.min(350,deficit>0?Math.max(150,deficit/2):quick(c,1)));
+        if(s==ORANGE)return "План: приблизно "+suggested+" мл протягом наступних 30–45 хв, потім перевіримо темп ще раз.";
+        return "План: почни з приблизно "+suggested+" мл зараз/найближчим часом і вирівнюй дефіцит поступово, не залпом.";
+    }
+
     public static String warning(Context c){
         String[] orange={
                 "Ти нижче свого темпу. Додай воду протягом наступної години, без залпового «наздоганяння».",
