@@ -603,7 +603,7 @@ public class MainActivity extends Activity {
         waterStateText.setText(HydrationEngine.statusLabel(this));
         waterStateText.setTextColor(color);
         waterProgress.setProgressTintList(ColorStateList.valueOf(color));
-        waterWarningText.setText(HydrationEngine.warning(this));
+        waterWarningText.setText(HydrationEngine.warning(this)+"\n\n"+HydrationEngine.nextPlan(this));
         waterPaceText.setText("Орієнтир зараз ≈ "+expected+" мл • прогноз ≈ "+projected+" мл\nНайдовша пауза сьогодні: "+HydrationEngine.longestGapMinutes(this)+" хв • план вчиться з твоїх wake-днів.");
 
         if(!overlayOpen&&currentTab==1){statusChip.setText(HydrationEngine.statusLabel(this));statusChip.setTextColor(color);}
