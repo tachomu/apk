@@ -642,7 +642,7 @@ public class MainActivity extends Activity {
 
         currentStatsText.setText(
                 "Їжа: "+meals+" / 3+ • перекуси "+snacks+"\n"+
-                "Вода: "+water+" / "+goal+" мл • "+HydrationEngine.statusLabel(this)+"\n"+
+                "Вода: "+water+" / "+goal+" мл • "+(HydrationEngine.active(this)?HydrationEngine.statusLabel(this):"не запущено")+"\n"+
                 "Серія: "+streak+" "+daysWord(streak)+" • рекорд "+StreakEngine.best(this)+"\n"+
                 "Поточний wake-день: "+active
         );
