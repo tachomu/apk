@@ -61,13 +61,31 @@ public class StreakSceneView extends View {
             p.setColor(0xFFFFD166);c.drawCircle(w*0.10f,h*0.56f,dp(12),p);c.drawRect(w*0.09f,h*0.58f,w*0.11f,h*0.66f,p);
         }
 
-        int tiles=Math.min(days,30);
+        int tiles=Math.min(days,100);
         if(tiles>0){
-            float startX=w*0.08f,endX=w*0.92f,step=(endX-startX)/30f;
+            float left=w*0.06f,right=w*0.94f,top=h*0.79f,bottom=h*0.965f;
+            p.setColor(0xB30B0F14);
+            c.drawRoundRect(new RectF(left-dp(4),top-dp(4),right+dp(4),bottom+dp(4)),dp(8),dp(8),p);
+
+            int cols=25,rows=4;
+            float cellW=(right-left)/cols;
+            float cellH=(bottom-top)/rows;
+
             for(int i=0;i<tiles;i++){
-                p.setColor(i<7?0xFF59D1B5:i<14?0xFF7AC7FF:i<21?0xFF9B7BFF:0xFFFFD166);
-                float x=startX+i*step;
-                c.drawRoundRect(new RectF(x,h*0.93f,x+step*0.65f,h*0.965f),dp(2.5f),dp(2.5f),p);
+                int row=i/cols;
+                int col=i%cols;
+                if(i<7)p.setColor(0xFF59D1B5);
+                else if(i<14)p.setColor(0xFF7AC7FF);
+                else if(i<30)p.setColor(0xFF9B7BFF);
+                else if(i<60)p.setColor(0xFFFFD166);
+                else p.setColor(0xFFFF8A65);
+
+                float x=left+col*cellW+cellW*0.18f;
+                float y=top+row*cellH+cellH*0.22f;
+                c.drawRoundRect(
+                        new RectF(x,y,x+cellW*0.62f,y+cellH*0.55f),
+                        dp(2),dp(2),p
+                );
             }
         }
 
