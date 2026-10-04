@@ -80,6 +80,7 @@ public class MainActivity extends Activity {
     private float touchDownX,touchDownY;
     private boolean swipeGesture=false;
     private long undoHideAt=0L;
+    private boolean waitingAutostartConfirmation=false;
 
     private final Runnable ticker=new Runnable(){
         @Override public void run(){
@@ -311,7 +312,7 @@ public class MainActivity extends Activity {
         fullScreenButton.setOnClickListener(v->openFullScreenSettings());
         batteryButton.setOnClickListener(v->openBatterySettings());
         accessibilityButton.setOnClickListener(v->startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)));
-        autostartButton.setOnClickListener(v->openAutostartSettings());
+        autostartButton.setOnClickListener(v->{waitingAutostartConfirmation=true;openAutostartSettings();});
 
         waterGoalSettingsButton.setOnClickListener(v->askNumber("Денна ціль води, мл",HydrationEngine.goal(this),value->{HydrationEngine.setGoal(this,value);renderAll();}));
         waterQuickSettingsButton.setOnClickListener(v->chooseQuickButton());
@@ -506,6 +507,16 @@ public class MainActivity extends Activity {
         renderAll();
         handler.removeCallbacks(ticker);
         handler.post(ticker);
+
+        if(waitingAutostartConfirmation){
+            waitingAutostartConfirmation=false;
+            handler.postDelayed(()->new AlertDialog.Builder(this)
+                    .setTitle("Автозапуск Xiaomi")
+                    .setMessage("Ти увімкнув автозапуск для «десятий»?")
+                    .setNegativeButton("Ні",(d,w)->{AppSettings.setAutostartConfirmed(this,false);renderAll();})
+                    .setPositiveButton("Так",(d,w)->{AppSettings.setAutostartConfirmed(this,true);renderAll();})
+                    .show(),250L);
+        }
     }
 
     @Override protected void onPause(){
@@ -776,7 +787,9 @@ public class MainActivity extends Activity {
         boolean full=Build.VERSION.SDK_INT<34||(nm!=null&&nm.canUseFullScreenIntent());
         boolean access=isAccessibilityEnabled();
 
-        int score=(notif?20:0)+(exact?20:0)+(battery?20:0)+(full?20:0)+(access?20:0);
+        boolean autostart=AppSettings.autostartConfirmed(this);
+        int okCount=(notif?1:0)+(exact?1:0)+(battery?1:0)+(full?1:0)+(access?1:0)+(autostart?1:0);
+        int score=Math.round(okCount*100f/6f);
 
         reliabilityText.setText(
                 "Сповіщення "+mark(notif)+"\n"+
@@ -784,8 +797,8 @@ public class MainActivity extends Activity {
                 "Full-screen alarm "+mark(full)+"\n"+
                 "Батарея без обмежень "+mark(battery)+"\n"+
                 "Штраф / блок соцмереж "+mark(access)+"\n"+
-                "Автозапуск Xiaomi — перевіряється вручну\n\n"+
-                "Надійність: "+score+"/100"
+                "Автозапуск Xiaomi "+mark(autostart)+"\n\n"+
+                "Передумови надійності: "+score+"/100"
         );
 
         foodModuleButton.setText("ЇЖА: "+(AppSettings.foodEnabled(this)?"ON":"OFF"));
