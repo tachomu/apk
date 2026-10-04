@@ -135,7 +135,7 @@ public final class NotificationHelper {
         int color=status==HydrationEngine.RED?Color.rgb(255,107,129):Color.rgb(255,159,67);
         Notification n=new Notification.Builder(c,waterCh(c)).setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle(title).setContentText(body).setStyle(new Notification.BigTextStyle().bigText(body))
-                .setPriority(Notification.PRIORITY_HIGH).setAutoCancel(true).setContentIntent(openWater(c))
+                .setPriority(Notification.PRIORITY_HIGH).setAutoCancel(status!=HydrationEngine.RED).setOngoing(status==HydrationEngine.RED).setContentIntent(openWater(c))
                 .setColor(color)
                 .addAction(new Notification.Action.Builder(null,"+"+HydrationEngine.quick(c,1)+" МЛ",waterAdd(c,HydrationEngine.quick(c,1),751)).build())
                 .addAction(new Notification.Action.Builder(null,"ВІДКРИТИ",openWater(c)).build()).build();
