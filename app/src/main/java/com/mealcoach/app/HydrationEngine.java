@@ -119,6 +119,41 @@ public final class HydrationEngine {
         return status(c)==ORANGE?orange[idx]:red[idx];
     }
 
+    public static List<long[]> drinkPoints(Context c){
+        List<long[]> out=new ArrayList<>();
+        long wake=wakeTime(c);
+        out.add(new long[]{wake,0});
+        File f=new File(c.getFilesDir(),FILE);
+        if(!f.exists())return out;
+        try(BufferedReader r=new BufferedReader(new InputStreamReader(new FileInputStream(f),StandardCharsets.UTF_8))){
+            String line;boolean first=true;
+            while((line=r.readLine())!=null){
+                if(first){first=false;continue;}
+                String[] p=line.split(",");
+                if(p.length<4)continue;
+                long ts=Long.parseLong(p[0]);
+                if(ts<wake)continue;
+                if("DRINK".equals(p[1])||"UNDO".equals(p[1])){
+                    int total=Integer.parseInt(p[3]);
+                    out.add(new long[]{ts,total});
+                }
+            }
+        }catch(Exception ignored){}
+        return out;
+    }
+
+    public static long longestGapMinutes(Context c){
+        List<long[]> pts=drinkPoints(c);
+        long prev=wakeTime(c),max=0;
+        for(int i=1;i<pts.size();i++){
+            long t=pts.get(i)[0];
+            max=Math.max(max,t-prev);
+            prev=t;
+        }
+        max=Math.max(max,System.currentTimeMillis()-prev);
+        return Math.max(0,max/60_000L);
+    }
+
     private static void log(Context c,String event,int amount,int total){
         try{
             File f=new File(c.getFilesDir(),FILE);boolean fresh=!f.exists();
