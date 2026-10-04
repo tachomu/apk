@@ -125,9 +125,19 @@ public final class MealEngine {
         String photo=p.getString(K_PHOTO,"");
         SharedPreferences.Editor e=p.edit().putInt(K_SNACKS,snacks)
                 .putInt(K_CONSEC_SNACKS,consecutive+1).putString(K_PHOTO,"");
-        if(canExtend)e.putLong(K_PREF,p.getLong(K_PREF,System.currentTimeMillis())+extension)
-                .putLong(K_DEADLINE,p.getLong(K_DEADLINE,System.currentTimeMillis())+extension)
-                .putInt(K_DELAY_USED,0);
+
+        if(canExtend){
+            long now=System.currentTimeMillis();
+            long oldPref=p.getLong(K_PREF,now);
+            long oldDeadline=p.getLong(K_DEADLINE,oldPref+60*MIN);
+            long window=Math.max(15*MIN,oldDeadline-oldPref);
+            long newPref=Math.max(oldPref,now)+extension;
+            long newDeadline=newPref+window;
+            e.putLong(K_PREF,newPref)
+                    .putLong(K_DEADLINE,newDeadline)
+                    .putInt(K_DELAY_USED,0);
+        }
+
         e.apply();
         LogStore.log(c,"SNACK",p.getInt(K_MEALS,0),snacks,canExtend?"deadline_shifted":"no_more_extension",photo);
         if(canExtend){resetFoodSignals(c);AlarmScheduler.scheduleCurrent(c);}
@@ -175,6 +185,27 @@ public final class MealEngine {
         WatchdogScheduler.cancel(c);
         LogStore.log(c,"SLEEP",meals,snacks,"","");
         DiagnosticStore.log(c,"SLEEP","food + hydration stopped");
+    }
+
+    public static void resumeFoodModule(Context c){
+        SharedPreferences p=prefs(c);
+        if(!p.getBoolean(K_DAY,false))return;
+
+        long now=System.currentTimeMillis();
+        resetFoodSignals(c);
+        PenaltyManager.setBlocked(c,false);
+
+        boolean first=p.getInt(K_MEALS,0)==0;
+        p.edit()
+                .putLong(K_START,now)
+                .putLong(K_PREF,now+30*MIN)
+                .putLong(K_DEADLINE,now+60*MIN)
+                .putBoolean(K_FIRST,first)
+                .putInt(K_DELAY_USED,0)
+                .apply();
+
+        DiagnosticStore.log(c,"FOOD_MODULE_RESUMED","first="+first);
+        AlarmScheduler.scheduleCurrent(c);
     }
 
     public static void savePhoto(Context c,String uri){
