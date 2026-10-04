@@ -149,7 +149,12 @@ public final class StreakEngine {
             if(p.length<2)continue;
             try{
                 long end=Long.parseLong(p[0]);int days=Integer.parseInt(p[1]);
-                b.append(days).append(" дн.  •  завершено ").append(fmt.format(new Date(end))).append("\n");
+                long start=end-Math.max(0,days)*DAY;
+                b.append(days).append(" дн.  •  ")
+                        .append(fmt.format(new Date(start)))
+                        .append("–")
+                        .append(fmt.format(new Date(end)))
+                        .append("\n");
             }catch(Exception ignored){}
         }
         return b.toString().trim();
