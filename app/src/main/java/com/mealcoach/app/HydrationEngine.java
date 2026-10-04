@@ -47,6 +47,7 @@ public final class HydrationEngine {
 
     public static void sleep(Context c){
         SharedPreferences p=prefs(c);
+        if(!p.getBoolean(K_ACTIVE,false)){WaterScheduler.cancel(c);return;}
         long now=System.currentTimeMillis();
         long wake=p.getLong(K_WAKE,now);
         long dur=Math.max(6*60*60_000L,Math.min(22*60*60_000L,now-wake));
