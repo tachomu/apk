@@ -9,7 +9,7 @@ import android.os.Build;
 
 public final class ReminderTestManager {
     private static final String PREFS="reminder_test_v4";
-    private static final String K_RUNNING="running",K_START="start",K_MASK="mask",K_LAST="last",K_FULLSCREEN5="fullscreen5",K_FULLSCREEN7="fullscreen7",K_SERVICE5="service5",K_SERVICE7="service7",K_FOOD_SOUND="food_sound",K_SOUND5="sound5",K_SOUND7="sound7";
+    private static final String K_RUNNING="running",K_START="start",K_MASK="mask",K_LAST="last",K_FULLSCREEN5="fullscreen5",K_FULLSCREEN7="fullscreen7",K_SERVICE5="service5",K_SERVICE7="service7",K_FOOD_SOUND="food_sound",K_SOUND5="sound5",K_SOUND7="sound7",K_PENALTY_ARMED="penalty_armed";
     private static final int BASE=8400;
     private static final long[] OFFSETS={0,30_000L,75_000L,120_000L,180_000L,240_000L,300_000L,360_000L};
 
@@ -22,7 +22,7 @@ public final class ReminderTestManager {
         long now=System.currentTimeMillis();
         SharedPreferences.Editor e=prefs(c).edit().clear().putBoolean(K_RUNNING,true).putLong(K_START,now).putInt(K_MASK,0).putInt(K_LAST,0)
                 .putBoolean(K_FULLSCREEN5,false).putBoolean(K_FULLSCREEN7,false).putBoolean(K_SERVICE5,false).putBoolean(K_SERVICE7,false)
-                .putBoolean(K_FOOD_SOUND,false).putBoolean(K_SOUND5,false).putBoolean(K_SOUND7,false);
+                .putBoolean(K_FOOD_SOUND,false).putBoolean(K_SOUND5,false).putBoolean(K_SOUND7,false).putBoolean(K_PENALTY_ARMED,false);
         for(int s=1;s<=7;s++)e.putLong("expected_"+s,now+OFFSETS[s]).putLong("delay_"+s,-1L);
         e.apply();
         for(int s=1;s<=7;s++)schedule(c,s,now+OFFSETS[s]);
@@ -109,6 +109,13 @@ public final class ReminderTestManager {
         e.apply();
         DiagnosticStore.log(c,"TEST_ALARM_SOUND_STARTED","stage="+stage);
     }
+
+    public static void markPenaltyArmed(Context c){
+        prefs(c).edit().putBoolean(K_PENALTY_ARMED,true).apply();
+        DiagnosticStore.log(c,"TEST_PENALTY_ARMED","30s");
+    }
+
+    public static boolean penaltyArmed(Context c){return prefs(c).getBoolean(K_PENALTY_ARMED,false);}
 
     public static boolean foodSoundPath(Context c){return prefs(c).getBoolean(K_FOOD_SOUND,false);}
     public static boolean sound5(Context c){return prefs(c).getBoolean(K_SOUND5,false);}
