@@ -59,7 +59,7 @@ public class MainActivity extends Activity {
     private WaterTimelineView waterTimelineView;
 
     private Button primaryButton,snackButton,delayButton,extendEatingButton,sleepButton;
-    private Button waterQuick1,waterQuick2,waterQuick3,waterCustomButton,waterUndoButton;
+    private Button waterQuick1,waterQuick2,waterQuick3,waterCustomButton,waterUndoButton,waterHistoryEditButton;
     private Button streakResetButton,statsButton,settingsButton,closeStatsButton,closeSettingsButton,navFood,navWater,navStreak;
     private Button foodModuleButton,waterModuleButton,streakModuleButton;
     private Button notificationSettingsButton,exactAlarmButton,fullScreenButton,batteryButton,accessibilityButton,autostartButton;
@@ -178,6 +178,7 @@ public class MainActivity extends Activity {
         waterQuick3=findViewById(R.id.waterQuick3);
         waterCustomButton=findViewById(R.id.waterCustomButton);
         waterUndoButton=findViewById(R.id.waterUndoButton);
+        waterHistoryEditButton=findViewById(R.id.waterHistoryEditButton);
 
         streakResetButton=findViewById(R.id.streakResetButton);
 
@@ -259,6 +260,10 @@ public class MainActivity extends Activity {
         waterQuick1.setOnClickListener(v->addWater(HydrationEngine.quick(this,1)));
         waterQuick2.setOnClickListener(v->addWater(HydrationEngine.quick(this,2)));
         waterQuick3.setOnClickListener(v->addWater(HydrationEngine.quick(this,3)));
+
+        waterQuick1.setOnLongClickListener(v->{editQuickButton(1);return true;});
+        waterQuick2.setOnLongClickListener(v->{editQuickButton(2);return true;});
+        waterQuick3.setOnLongClickListener(v->{editQuickButton(3);return true;});
         waterCustomButton.setOnClickListener(v->{
             if(!MealEngine.prefs(this).getBoolean(MealEngine.K_DAY,false)){
                 MealEngine.wake(this);
@@ -275,6 +280,7 @@ public class MainActivity extends Activity {
                 renderAll();
             }
         });
+        waterHistoryEditButton.setOnClickListener(v->editWaterHistory());
 
         streakResetButton.setOnClickListener(v->new AlertDialog.Builder(this)
                 .setTitle("Точно записати?")
@@ -771,6 +777,7 @@ public class MainActivity extends Activity {
             return;
         }
         HydrationEngine.add(this,amount);
+        findViewById(R.id.root).performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
         undoHideAt=System.currentTimeMillis()+15_000L;
         Toast.makeText(this,"+"+amount+" мл  •  можна скасувати",Toast.LENGTH_SHORT).show();
         renderAll();
@@ -795,6 +802,45 @@ public class MainActivity extends Activity {
                         Toast.makeText(this,"Некоректне число",Toast.LENGTH_SHORT).show();
                     }
                 }).show();
+    }
+
+    private void editQuickButton(int idx){
+        askNumber("Нове значення швидкої кнопки, мл",HydrationEngine.quick(this,idx),v->{
+            HydrationEngine.setQuick(this,idx,v);
+            Toast.makeText(this,"Кнопку оновлено.",Toast.LENGTH_SHORT).show();
+            renderAll();
+        });
+    }
+
+    private void editWaterHistory(){
+        java.util.List<long[]> drinks=HydrationEngine.effectiveDrinks(this);
+        if(drinks.isEmpty()){
+            Toast.makeText(this,"Сьогодні ще немає записів води.",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String[] labels=new String[drinks.size()];
+        SimpleDateFormat fmt=new SimpleDateFormat("HH:mm",Locale.getDefault());
+        for(int i=0;i<drinks.size();i++){
+            long[] d=drinks.get(i);
+            labels[i]=fmt.format(new Date(d[0]))+"  •  +"+d[1]+" мл";
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Видалити помилковий запис")
+                .setItems(labels,(dialog,which)->{
+                    long[] selected=drinks.get(which);
+                    new AlertDialog.Builder(this)
+                            .setTitle(labels[which])
+                            .setMessage("Прибрати цей запис із сьогоднішньої води?")
+                            .setNegativeButton("Ні",null)
+                            .setPositiveButton("Видалити",(d,w)->{
+                                boolean ok=HydrationEngine.deleteDrink(this,selected[0]);
+                                Toast.makeText(this,ok?"Запис видалено.":"Не вдалося видалити.",Toast.LENGTH_SHORT).show();
+                                renderAll();
+                            }).show();
+                })
+                .show();
     }
 
     private void chooseQuickButton(){
