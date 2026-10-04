@@ -18,6 +18,8 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
+import android.media.AudioAttributes;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -1013,18 +1015,48 @@ public class MainActivity extends Activity {
     private void chooseSound(boolean food){
         String current=food?AppSettings.foodSound(this):AppSettings.waterSound(this);
         String[] items=current.isEmpty()
-                ? new String[]{"Вибрати свій аудіофайл"}
-                : new String[]{"Вибрати інший аудіофайл","Повернути вбудований звук"};
-        new AlertDialog.Builder(this).setTitle(food?"Звук їжі":"Звук води").setItems(items,(d,which)->{
-            if(!current.isEmpty()&&which==1){
-                if(food)AppSettings.setFoodSound(this,"");
-                else AppSettings.setWaterSound(this,"");
-                NotificationHelper.ensureChannels(this);
-                renderAll();
+                ?new String[]{"Прослухати поточний","Вибрати свій аудіофайл"}
+                :new String[]{"Прослухати поточний","Вибрати інший аудіофайл","Повернути вбудований звук"};
+
+        new AlertDialog.Builder(this)
+                .setTitle(food?"Звук їжі":"Звук води")
+                .setItems(items,(d,which)->{
+                    if(which==0){
+                        previewSound(food);
+                    }else if(!current.isEmpty()&&which==2){
+                        if(food)AppSettings.setFoodSound(this,"");
+                        else AppSettings.setWaterSound(this,"");
+                        NotificationHelper.ensureChannels(this);
+                        renderAll();
+                    }else{
+                        pickSound(food?REQ_FOOD_SOUND:REQ_WATER_SOUND);
+                    }
+                }).show();
+    }
+
+    private void previewSound(boolean food){
+        String custom=food?AppSettings.foodSound(this):AppSettings.waterSound(this);
+        try{
+            MediaPlayer player=new MediaPlayer();
+            if(custom==null||custom.isEmpty()){
+                int res=food?R.raw.food:R.raw.water;
+                Uri uri=Uri.parse("android.resource://"+getPackageName()+"/"+res);
+                player.setDataSource(this,uri);
             }else{
-                pickSound(food?REQ_FOOD_SOUND:REQ_WATER_SOUND);
+                player.setDataSource(this,Uri.parse(custom));
             }
-        }).show();
+            player.setAudioAttributes(new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build());
+            player.setOnCompletionListener(mp->{mp.release();});
+            player.setOnErrorListener((mp,what,extra)->{mp.release();return true;});
+            player.prepare();
+            player.start();
+        }catch(Exception e){
+            Toast.makeText(this,"Не вдалося відтворити звук.",Toast.LENGTH_SHORT).show();
+            DiagnosticStore.log(this,"SOUND_PREVIEW_ERROR",e.toString());
+        }
     }
 
     private void pickSound(int req){
@@ -1143,10 +1175,14 @@ public class MainActivity extends Activity {
                 int flags=data.getFlags()&(Intent.FLAG_GRANT_READ_URI_PERMISSION|Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 getContentResolver().takePersistableUriPermission(uri,flags);
             }catch(Exception ignored){}
-            if(req==REQ_FOOD_SOUND)AppSettings.setFoodSound(this,uri.toString());
-            else AppSettings.setWaterSound(this,uri.toString());
+
+            boolean food=req==REQ_FOOD_SOUND;
+            String imported=SoundStore.importForNotifications(this,uri,food?"food":"water");
+            if(food)AppSettings.setFoodSound(this,imported);
+            else AppSettings.setWaterSound(this,imported);
+
             NotificationHelper.ensureChannels(this);
-            Toast.makeText(this,"Звук збережено.",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Звук збережено. Можеш одразу прослухати його в налаштуваннях.",Toast.LENGTH_SHORT).show();
             renderAll();
             return;
         }
