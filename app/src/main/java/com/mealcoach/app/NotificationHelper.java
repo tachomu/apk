@@ -150,10 +150,12 @@ public final class NotificationHelper {
         String[] names={"","−60 хв","−20 хв","Пора їсти","+15 хв","+30 хв fullscreen","+45 хв + блок","FINAL alarm"};
         int s=Math.max(1,Math.min(7,stage));
         String body=names[s]+" • подія реально доставлена Android.";
-        Notification n=new Notification.Builder(c,CH_TEST).setSmallIcon(R.drawable.ic_launcher)
+        String channel=(s==3)?foodCh(c,false):((s==4||s==6)?foodCh(c,true):CH_TEST);
+        Notification n=new Notification.Builder(c,channel).setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle("ТЕСТ · етап "+s+"/7").setContentText(body)
                 .setStyle(new Notification.BigTextStyle().bigText(body))
-                .setPriority(Notification.PRIORITY_HIGH).setAutoCancel(true).setContentIntent(openSettings(c)).build();
+                .setPriority(Notification.PRIORITY_HIGH).setAutoCancel(true).setContentIntent(openSettings(c))
+                .setColor((s==4||s==6)?Color.rgb(255,107,129):Color.rgb(89,209,181)).build();
         NotificationManager nm=(NotificationManager)c.getSystemService(Context.NOTIFICATION_SERVICE);
         if(nm!=null)nm.notify(820+s,n);
     }
