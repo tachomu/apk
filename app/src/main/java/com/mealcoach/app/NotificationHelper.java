@@ -130,6 +130,7 @@ public final class NotificationHelper {
     public static void showWaterReminder(Context c,int status){
         ensureChannels(c);
         if(status==HydrationEngine.GREEN)return;
+        HydrationEngine.markReminderShown(c);
         String title=status==HydrationEngine.RED?"Мало води":"Трохи не встигаєш по воді";
         String body=HydrationEngine.warning(c);
         int color=status==HydrationEngine.RED?Color.rgb(255,107,129):Color.rgb(255,159,67);
