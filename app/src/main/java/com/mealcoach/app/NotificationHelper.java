@@ -145,6 +145,21 @@ public final class NotificationHelper {
         DiagnosticStore.log(c,"WATER_NOTIFICATION_SHOWN","status="+status);
     }
 
+    public static void showWaterTest(Context c){
+        ensureChannels(c);
+        Notification n=new Notification.Builder(c,waterCh(c))
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle("ТЕСТ · ВОДА")
+                .setContentText("Канал води працює, якщо це повідомлення видно і його звук чути.")
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setAutoCancel(true)
+                .setColor(Color.rgb(90,169,255))
+                .setContentIntent(openSettings(c))
+                .build();
+        NotificationManager nm=(NotificationManager)c.getSystemService(Context.NOTIFICATION_SERVICE);
+        if(nm!=null)nm.notify(880,n);
+        DiagnosticStore.log(c,"TEST_WATER_NOTIFICATION","sent");
+    }
     public static void showTestStage(Context c,int stage){
         ensureChannels(c);
         String[] names={"","−60 хв","−20 хв","Пора їсти","+15 хв","+30 хв fullscreen","+45 хв + блок","FINAL alarm"};
