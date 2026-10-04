@@ -67,7 +67,7 @@ public class MainActivity extends Activity {
     private Button foodModuleButton,waterModuleButton,streakModuleButton;
     private Button notificationSettingsButton,exactAlarmButton,fullScreenButton,batteryButton,accessibilityButton,autostartButton;
     private Button waterGoalSettingsButton,waterQuickSettingsButton,foodSoundButton,waterSoundButton;
-    private Button testButton,testNextButton,diagnosticExportButton,dataExportButton,memeModeButton;
+    private Button testButton,testNextButton,waterTestButton,diagnosticExportButton,dataExportButton,memeModeButton;
 
     private LinearLayout flowHint,secondaryActions,bottomNav;
     private ScrollView foodPage,waterPage,streakPage,statsPage,settingsPage;
@@ -214,6 +214,7 @@ public class MainActivity extends Activity {
 
         testButton=findViewById(R.id.testButton);
         testNextButton=findViewById(R.id.testNextButton);
+        waterTestButton=findViewById(R.id.waterTestButton);
         diagnosticExportButton=findViewById(R.id.diagnosticExportButton);
         dataExportButton=findViewById(R.id.dataExportButton);
         memeModeButton=findViewById(R.id.memeModeButton);
@@ -326,6 +327,7 @@ public class MainActivity extends Activity {
             renderAll();
         });
         testNextButton.setOnClickListener(v->{ReminderTestManager.nextNow(this);renderAll();});
+        waterTestButton.setOnClickListener(v->{NotificationHelper.showWaterTest(this);Toast.makeText(this,"Тест води відправлено.",Toast.LENGTH_SHORT).show();});
         diagnosticExportButton.setOnClickListener(v->exportDiagnostics());
         dataExportButton.setOnClickListener(v->exportAllData());
         memeModeButton.setOnClickListener(v->{StreakEngine.toggleMeme(this);renderAll();});
