@@ -11,6 +11,7 @@ public final class AppSettings {
     private static final String FOOD_SOUND="food_sound";
     private static final String WATER_SOUND="water_sound";
     private static final String SETUP_DONE="setup_done";
+    private static final String AUTOSTART_CONFIRMED="autostart_confirmed";
 
     private AppSettings(){}
 
@@ -30,4 +31,6 @@ public final class AppSettings {
     public static void setWaterSound(Context c,String uri){p(c).edit().putString(WATER_SOUND,uri==null?"":uri).apply();}
     public static boolean setupDone(Context c){return p(c).getBoolean(SETUP_DONE,false);}
     public static void setSetupDone(Context c,boolean v){p(c).edit().putBoolean(SETUP_DONE,v).apply();}
+    public static boolean autostartConfirmed(Context c){return p(c).getBoolean(AUTOSTART_CONFIRMED,false);}
+    public static void setAutostartConfirmed(Context c,boolean v){p(c).edit().putBoolean(AUTOSTART_CONFIRMED,v).apply();}
 }
