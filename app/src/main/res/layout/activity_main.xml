@@ -36,7 +36,10 @@
             android:background="@drawable/bg_secondary"
             android:text="НЕ ЗАПУЩЕНО"
             android:textColor="@color/muted"
-            android:textSize="10sp"/>
+            android:textSize="10sp"
+            android:maxLines="1"
+            android:maxWidth="112dp"
+            android:ellipsize="end"/>
 
         <Button
             android:id="@+id/statsButton"
