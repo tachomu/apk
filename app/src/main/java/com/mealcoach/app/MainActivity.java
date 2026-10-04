@@ -638,7 +638,7 @@ public class MainActivity extends Activity {
         int water=HydrationEngine.total(this);
         int goal=HydrationEngine.goal(this);
         int streak=StreakEngine.days(this);
-        String active=day?formatDuration(System.currentTimeMillis()-HydrationEngine.wakeTime(this)):"день не запущено";
+        String active=day?formatDuration(System.currentTimeMillis()-p.getLong(MealEngine.K_WAKE_TIME,System.currentTimeMillis())):"день не запущено";
 
         currentStatsText.setText(
                 "Їжа: "+meals+" / 3+ • перекуси "+snacks+"\n"+
