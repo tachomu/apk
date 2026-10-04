@@ -58,7 +58,7 @@ public class AlarmService extends Service {
             testStage=0;
 
             android.content.SharedPreferences p=MealEngine.prefs(this);
-            if(!p.getBoolean(MealEngine.K_DAY,false)||p.getBoolean(MealEngine.K_EATING,false)){
+            if(!AppSettings.foodEnabled(this)||!p.getBoolean(MealEngine.K_DAY,false)||p.getBoolean(MealEngine.K_EATING,false)){
                 stopSelf();
                 return START_NOT_STICKY;
             }
