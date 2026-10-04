@@ -153,12 +153,12 @@ public final class MealEngine {
         DaySummaryStore.closeDay(c,
                 p.getLong(K_WAKE_TIME,now),
                 now,
-                meals,
+                AppSettings.foodEnabled(c)?meals:-1,
                 snacks,
-                HydrationEngine.total(c),
-                HydrationEngine.goal(c),
-                p.getInt(K_LATE_MEALS,0),
-                p.getInt(K_AUTO_MEALS,0));
+                AppSettings.waterEnabled(c)?HydrationEngine.total(c):0,
+                AppSettings.waterEnabled(c)?HydrationEngine.goal(c):0,
+                AppSettings.foodEnabled(c)?p.getInt(K_LATE_MEALS,0):0,
+                AppSettings.foodEnabled(c)?p.getInt(K_AUTO_MEALS,0):0);
         resetFoodSignals(c); EatingScheduler.cancel(c); HydrationEngine.sleep(c); PenaltyManager.setBlocked(c,false);
         p.edit().putBoolean(K_DAY,false).putBoolean(K_EATING,false).putLong(K_EATING_START,0L)
                 .putInt(K_EATING_EXT,0).putString(K_PHOTO,"").apply();
