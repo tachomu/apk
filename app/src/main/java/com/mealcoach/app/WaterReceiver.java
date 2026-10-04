@@ -6,7 +6,7 @@ import android.content.Intent;
 
 public class WaterReceiver extends BroadcastReceiver {
     @Override public void onReceive(Context c,Intent i){
-        if(!HydrationEngine.active(c))return;
+        if(!AppSettings.waterEnabled(c)||!HydrationEngine.active(c))return;
         int status=HydrationEngine.status(c);
         DiagnosticStore.log(c,"WATER_ALARM_FIRED","status="+status+" total="+HydrationEngine.total(c));
         if(status!=HydrationEngine.GREEN){
