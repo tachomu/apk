@@ -128,12 +128,17 @@ public final class MealEngine {
         SharedPreferences p=prefs(c);
         if(!p.getBoolean(K_DAY,false)||p.getBoolean(K_EATING,false))return false;
         long now=System.currentTimeMillis();
-        if(now<p.getLong(K_PREF,Long.MAX_VALUE))return false;
+        long oldPref=p.getLong(K_PREF,Long.MAX_VALUE);
+        long oldDeadline=p.getLong(K_DEADLINE,Long.MAX_VALUE);
+        if(now<oldPref)return false;
+        if(now>=oldPref+30*MIN)return false;
         int used=p.getInt(K_DELAY_USED,0);
         if(used>=2)return false;
+
+        long shift=Math.max(15*MIN,(now-oldPref)+15*MIN);
         p.edit()
-                .putLong(K_PREF,p.getLong(K_PREF,now)+15*MIN)
-                .putLong(K_DEADLINE,p.getLong(K_DEADLINE,now)+15*MIN)
+                .putLong(K_PREF,oldPref+shift)
+                .putLong(K_DEADLINE,oldDeadline+shift)
                 .putInt(K_DELAY_USED,used+1).apply();
         resetFoodSignals(c);
         LogStore.log(c,"DELAY_15",p.getInt(K_MEALS,0),p.getInt(K_SNACKS,0),"used="+(used+1),"");
