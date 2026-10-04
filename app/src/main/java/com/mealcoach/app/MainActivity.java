@@ -47,11 +47,12 @@ public class MainActivity extends Activity {
     private static final int REQ_DEBUG_EXPORT=44;
     private static final int REQ_FOOD_SOUND=45;
     private static final int REQ_WATER_SOUND=46;
+    private static final int REQ_DATA_EXPORT=47;
 
     private TextView screenTitle,statusChip,cycleLabel,countdown,deadlineText,mealDotsText,mealsText,snacksText;
     private TextView flowTitle,flowSteps,lastEventText,waterStateText,waterTotalText,waterPaceText,waterWarningText,waterHistoryText;
     private TextView streakRankText,streakDaysText,streakStatsText,streakNextText,streakBadgesText,streakMarksText,streakArchiveText;
-    private TextView reliabilityText,testStatus,currentStatsText,historyStatsText;
+    private TextView reliabilityText,testStatus,currentStatsText,historyStatsText,foodHistoryText;
     private ProgressBar cycleProgress,waterProgress,statsFoodProgress,statsWaterProgress,statsStreakProgress,testProgress;
     private StreakSceneView streakSceneView;
     private HydrationTankView hydrationTankView;
@@ -63,7 +64,7 @@ public class MainActivity extends Activity {
     private Button foodModuleButton,waterModuleButton,streakModuleButton;
     private Button notificationSettingsButton,exactAlarmButton,fullScreenButton,batteryButton,accessibilityButton,autostartButton;
     private Button waterGoalSettingsButton,waterQuickSettingsButton,foodSoundButton,waterSoundButton;
-    private Button testButton,testNextButton,diagnosticExportButton,memeModeButton;
+    private Button testButton,testNextButton,diagnosticExportButton,dataExportButton,memeModeButton;
 
     private LinearLayout flowHint,secondaryActions,bottomNav;
     private ScrollView foodPage,waterPage,streakPage,statsPage,settingsPage;
@@ -155,6 +156,7 @@ public class MainActivity extends Activity {
         testStatus=findViewById(R.id.testStatus);
         currentStatsText=findViewById(R.id.currentStatsText);
         historyStatsText=findViewById(R.id.historyStatsText);
+        foodHistoryText=findViewById(R.id.foodHistoryText);
 
         cycleProgress=findViewById(R.id.cycleProgress);
         waterProgress=findViewById(R.id.waterProgress);
@@ -207,6 +209,7 @@ public class MainActivity extends Activity {
         testButton=findViewById(R.id.testButton);
         testNextButton=findViewById(R.id.testNextButton);
         diagnosticExportButton=findViewById(R.id.diagnosticExportButton);
+        dataExportButton=findViewById(R.id.dataExportButton);
         memeModeButton=findViewById(R.id.memeModeButton);
 
         flowHint=findViewById(R.id.flowHint);
@@ -313,6 +316,7 @@ public class MainActivity extends Activity {
         });
         testNextButton.setOnClickListener(v->{ReminderTestManager.nextNow(this);renderAll();});
         diagnosticExportButton.setOnClickListener(v->exportDiagnostics());
+        dataExportButton.setOnClickListener(v->exportAllData());
         memeModeButton.setOnClickListener(v->{StreakEngine.toggleMeme(this);renderAll();});
     }
 
@@ -667,6 +671,7 @@ public class MainActivity extends Activity {
         statsStreakProgress.setProgress(Math.min(streak,nextMilestone));
 
         historyStatsText.setText(DaySummaryStore.stats(this));
+        foodHistoryText.setText(LogStore.recent(this,30));
     }
 
     private void renderSettings(){
@@ -990,6 +995,14 @@ public class MainActivity extends Activity {
         }catch(Exception e){return false;}
     }
 
+    private void exportAllData(){
+        Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        i.setType("application/zip");
+        i.putExtra(Intent.EXTRA_TITLE,"desyatyi_data.zip");
+        startActivityForResult(i,REQ_DATA_EXPORT);
+    }
+
     private void exportDiagnostics(){
         DiagnosticStore.log(this,"DIAGNOSTIC_EXPORT_REQUEST","user");
         Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT);
@@ -1038,6 +1051,12 @@ public class MainActivity extends Activity {
         if(req==REQ_DEBUG_EXPORT&&result==RESULT_OK&&data!=null&&data.getData()!=null){
             boolean ok=DiagnosticStore.copyTo(this,data.getData());
             Toast.makeText(this,ok?"Лог експортовано":"Логів ще немає",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(req==REQ_DATA_EXPORT&&result==RESULT_OK&&data!=null&&data.getData()!=null){
+            boolean ok=ExportStore.exportAll(this,data.getData());
+            Toast.makeText(this,ok?"Дані експортовано":"Не вдалося експортувати",Toast.LENGTH_SHORT).show();
         }
     }
 
