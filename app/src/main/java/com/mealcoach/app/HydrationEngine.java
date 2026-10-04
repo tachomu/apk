@@ -23,7 +23,7 @@ public final class HydrationEngine {
     private static final String PREFS="hydration_v4";
     private static final String K_ACTIVE="active",K_WAKE="wake",K_TOTAL="total",K_LAST_TS="last_ts",K_LAST_AMOUNT="last_amount",K_UNDO_VALID="undo_valid";
     private static final String K_GOAL="goal",K_Q1="q1",K_Q2="q2",K_Q3="q3",K_AWAKE_AVG="awake_avg";
-    private static final String K_LAST_REMINDER="last_reminder",K_WARNING_INDEX="warning_index";
+    private static final String K_LAST_REMINDER="last_reminder",K_WARNING_INDEX="warning_index",K_DRINK_GAP_AVG="drink_gap_avg",K_DRINK_GAP_N="drink_gap_n";
     private static final String FILE="water_log.csv";
     private static final long DEFAULT_DAY=16L*60L*60L*1000L;
 
@@ -109,6 +109,19 @@ public final class HydrationEngine {
         SharedPreferences p=prefs(c);
         int next=p.getInt(K_TOTAL,0)+amount;
         long now=System.currentTimeMillis();
+        long previous=p.getLong(K_LAST_TS,0L);
+
+        if(previous>0L){
+            float gapMin=(now-previous)/60_000f;
+            if(gapMin>=10f&&gapMin<=240f){
+                int n=p.getInt(K_DRINK_GAP_N,0);
+                float old=p.getFloat(K_DRINK_GAP_AVG,75f);
+                float alpha=n<5?1f/(n+1):0.22f;
+                float avg=old+(gapMin-old)*alpha;
+                p.edit().putFloat(K_DRINK_GAP_AVG,avg).putInt(K_DRINK_GAP_N,n+1).apply();
+            }
+        }
+
         p.edit()
                 .putInt(K_TOTAL,next)
                 .putLong(K_LAST_TS,now)
@@ -118,7 +131,7 @@ public final class HydrationEngine {
                 .apply();
         log(c,"DRINK",amount,next);
         NotificationHelper.clearWaterReminder(c);
-        WaterScheduler.scheduleNext(c,75*60_000L);
+        WaterScheduler.scheduleNext(c,reminderIntervalMs(c));
         return next;
     }
 
@@ -135,7 +148,7 @@ public final class HydrationEngine {
                 .apply();
         log(c,"UNDO",-a,next);
         NotificationHelper.clearWaterReminder(c);
-        WaterScheduler.scheduleNext(c,30*60_000L);
+        WaterScheduler.scheduleNext(c,reminderIntervalMs(c));
         return true;
     }
 
@@ -188,9 +201,18 @@ public final class HydrationEngine {
         p.edit().putLong(K_LAST_REMINDER,System.currentTimeMillis()).putInt(K_WARNING_INDEX,next).apply();
     }
 
+    public static long learnedDrinkGapMinutes(Context c){
+        SharedPreferences p=prefs(c);
+        int n=p.getInt(K_DRINK_GAP_N,0);
+        if(n<=0)return 75L;
+        return Math.round(Math.max(60f,Math.min(110f,p.getFloat(K_DRINK_GAP_AVG,75f))));
+    }
+
     public static long reminderIntervalMs(Context c){
         int s=status(c);
-        return s==RED?25*60_000L:s==ORANGE?45*60_000L:75*60_000L;
+        if(s==RED)return 25*60_000L;
+        if(s==ORANGE)return 45*60_000L;
+        return learnedDrinkGapMinutes(c)*60_000L;
     }
 
     public static boolean reminderDue(Context c){
@@ -337,7 +359,7 @@ public final class HydrationEngine {
                     .putLong(K_LAST_REMINDER,System.currentTimeMillis())
                     .apply();
             NotificationHelper.clearWaterReminder(c);
-            WaterScheduler.scheduleNext(c,30*60_000L);
+            WaterScheduler.scheduleNext(c,reminderIntervalMs(c));
         }
 
         DiagnosticStore.log(c,"WATER_DRINK_DELETED","timestamp="+timestamp);
