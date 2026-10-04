@@ -749,6 +749,16 @@
                         android:textColor="@color/text"
                         android:textSize="14sp"
                         android:lineSpacingExtra="4dp"/>
+                    <ProgressBar
+                        android:id="@+id/testProgress"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="10dp"
+                        android:layout_marginTop="10dp"
+                        android:max="7"
+                        android:progress="0"
+                        android:progressTint="@color/accent"
+                        android:progressBackgroundTint="@color/line"/>
                     <Button android:id="@+id/testButton" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="10dp" android:background="@drawable/bg_primary" android:text="ФОНОВИЙ ТЕСТ · 6 ХВ" android:textColor="@color/bg"/>
                     <Button android:id="@+id/testNextButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="НАСТУПНИЙ ЕТАП ЗАРАЗ" android:textColor="@color/text"/>
                     <Button android:id="@+id/diagnosticExportButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="ЕКСПОРТ ДІАГНОСТИКИ" android:textColor="@color/text"/>
