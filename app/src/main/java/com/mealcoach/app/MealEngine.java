@@ -42,6 +42,7 @@ public final class MealEngine {
         LogStore.log(c,"WAKE",0,0,"","");
         DiagnosticStore.log(c,"WAKE","food + hydration day started");
         AlarmScheduler.scheduleCurrent(c);
+        WatchdogScheduler.schedule(c);
     }
 
     public static void startEating(Context c){
@@ -148,6 +149,7 @@ public final class MealEngine {
         resetFoodSignals(c); EatingScheduler.cancel(c); HydrationEngine.sleep(c); PenaltyManager.setBlocked(c,false);
         p.edit().putBoolean(K_DAY,false).putBoolean(K_EATING,false).putLong(K_EATING_START,0L)
                 .putInt(K_EATING_EXT,0).putString(K_PHOTO,"").apply();
+        WatchdogScheduler.cancel(c);
         LogStore.log(c,"SLEEP",meals,snacks,"","");
         DiagnosticStore.log(c,"SLEEP","food + hydration stopped");
     }
