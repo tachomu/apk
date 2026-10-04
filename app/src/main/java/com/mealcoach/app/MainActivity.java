@@ -1198,8 +1198,7 @@ public class MainActivity extends Activity {
         if((req==REQ_FOOD_SOUND||req==REQ_WATER_SOUND)&&result==RESULT_OK&&data!=null&&data.getData()!=null){
             Uri uri=data.getData();
             try{
-                int flags=data.getFlags()&(Intent.FLAG_GRANT_READ_URI_PERMISSION|Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                getContentResolver().takePersistableUriPermission(uri,flags);
+                getContentResolver().takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION);
             }catch(Exception ignored){}
 
             boolean food=req==REQ_FOOD_SOUND;
