@@ -203,7 +203,7 @@ public class MainActivity extends Activity {
         navHistory.setTextColor(getColor(page == 1 ? R.color.accent : R.color.muted));
         navSettings.setTextColor(getColor(page == 2 ? R.color.accent : R.color.muted));
 
-        screenTitle.setText(page == 0 ? "MEAL COACH" : page == 1 ? "ІСТОРІЯ" : "НАЛАШТУВАННЯ");
+        screenTitle.setText(page == 0 ? "В САШИНІ ТРУСІКІ" : page == 1 ? "ІСТОРІЯ" : "НАЛАШТУВАННЯ");
         if (page == 1) refreshHistory();
     }
 
@@ -400,7 +400,7 @@ public class MainActivity extends Activity {
         Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         i.addCategory(Intent.CATEGORY_OPENABLE);
         i.setType("text/csv");
-        i.putExtra(Intent.EXTRA_TITLE, "MealCoach_meal_log.csv");
+        i.putExtra(Intent.EXTRA_TITLE, "v_sashyni_trusiki_log.csv");
         startActivityForResult(i, REQ_EXPORT);
     }
 
@@ -409,7 +409,7 @@ public class MainActivity extends Activity {
         Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         i.addCategory(Intent.CATEGORY_OPENABLE);
         i.setType("text/plain");
-        i.putExtra(Intent.EXTRA_TITLE, "MealCoach_debug.log");
+        i.putExtra(Intent.EXTRA_TITLE, "v_sashyni_trusiki_debug.log");
         startActivityForResult(i, REQ_DEBUG_EXPORT);
     }
 
