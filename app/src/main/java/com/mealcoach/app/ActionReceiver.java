@@ -11,5 +11,10 @@ public class ActionReceiver extends BroadcastReceiver {
         else if("com.mealcoach.ATE".equals(action)) MealEngine.ate(context);
         else if("com.mealcoach.DELAY".equals(action)) MealEngine.delay15(context);
         else if("com.mealcoach.EXTEND_EATING".equals(action)) MealEngine.extendEating(context);
+        else if("com.mealcoach.WATER_ADD".equals(action)) {
+            int amount=intent.getIntExtra("amount",HydrationEngine.quick(context,1));
+            HydrationEngine.add(context,amount);
+            NotificationHelper.clearWaterReminder(context);
+        }
     }
 }
