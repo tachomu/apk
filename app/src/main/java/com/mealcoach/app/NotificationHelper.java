@@ -92,7 +92,7 @@ public final class NotificationHelper {
                 channel=foodCh(c,true);ongoing=true;break;
             case AlarmScheduler.LATE_45:
                 title="+45 хв: штраф активний";
-                body="Соцмережі заблоковані до початку прийому їжі. Далі — фінальний alarm.";
+                body="Соцмережі заблоковані до завершення прийому їжі. Далі — фінальний alarm.";
                 channel=foodCh(c,true);ongoing=true;break;
             default:return;
         }
