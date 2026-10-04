@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:paddingLeft="18dp"
-        android:paddingRight="12dp"
+        android:paddingRight="10dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -19,11 +19,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="В САШИНІ ТРУСІКІ"
+            android:text="ДЕСЯТИЙ · ЇЖА"
             android:textColor="@color/text"
             android:textSize="14sp"
             android:fontFamily="sans-serif-medium"
-            android:letterSpacing="0.08"/>
+            android:letterSpacing="0.06"/>
 
         <TextView
             android:id="@+id/statusChip"
@@ -36,13 +36,23 @@
             android:background="@drawable/bg_secondary"
             android:text="НЕ ЗАПУЩЕНО"
             android:textColor="@color/muted"
-            android:textSize="11sp"/>
+            android:textSize="10sp"/>
+
+        <Button
+            android:id="@+id/statsButton"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_marginLeft="6dp"
+            android:background="@drawable/bg_secondary"
+            android:text="▥"
+            android:textColor="@color/text"
+            android:textSize="18sp"/>
 
         <Button
             android:id="@+id/settingsButton"
-            android:layout_width="48dp"
+            android:layout_width="46dp"
             android:layout_height="46dp"
-            android:layout_marginLeft="7dp"
+            android:layout_marginLeft="5dp"
             android:background="@drawable/bg_secondary"
             android:text="⚙"
             android:textColor="@color/text"
@@ -55,6 +65,7 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
+        <!-- FOOD -->
         <ScrollView
             android:id="@+id/foodPage"
             android:layout_width="match_parent"
@@ -96,7 +107,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Після пробудження стартують їжа і вода"
+                        android:text="Пробудження запускає їжу і воду"
                         android:textColor="@color/muted"
                         android:textSize="14sp"/>
                     <ProgressBar
@@ -260,6 +271,7 @@
             </LinearLayout>
         </ScrollView>
 
+        <!-- WATER -->
         <ScrollView
             android:id="@+id/waterPage"
             android:layout_width="match_parent"
@@ -311,7 +323,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Після «Я прокинувся» темп підлаштується під твій день."
+                        android:text="Темп стартує від фактичного пробудження."
                         android:textColor="@color/muted"
                         android:textSize="14sp"/>
                     <TextView
@@ -325,7 +337,6 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/waterQuickRow"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
@@ -406,6 +417,7 @@
             </LinearLayout>
         </ScrollView>
 
+        <!-- STREAK -->
         <ScrollView
             android:id="@+id/streakPage"
             android:layout_width="match_parent"
@@ -438,28 +450,45 @@
                         android:id="@+id/streakDaysText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="6dp"
                         android:text="0 ДНІВ"
                         android:textColor="@color/text"
                         android:textSize="54sp"
                         android:fontFamily="sans-serif-medium"/>
-                    <TextView
-                        android:id="@+id/streakSceneText"
+
+                    <com.mealcoach.app.StreakSceneView
+                        android:id="@+id/streakSceneView"
                         android:layout_width="match_parent"
-                        android:layout_height="110dp"
-                        android:layout_marginTop="8dp"
-                        android:gravity="center"
-                        android:text="·"
-                        android:textColor="@color/text"
-                        android:textSize="34sp"/>
+                        android:layout_height="210dp"
+                        android:layout_marginTop="10dp"/>
+
                     <TextView
                         android:id="@+id/streakStatsText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
                         android:gravity="center"
                         android:text="Рекорд 0 • чистих днів 1/1"
                         android:textColor="@color/muted"
                         android:textSize="14sp"/>
+                    <TextView
+                        android:id="@+id/streakNextText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="7dp"
+                        android:gravity="center"
+                        android:text="До наступного апгрейду"
+                        android:textColor="@color/text"
+                        android:textSize="14sp"/>
+                    <TextView
+                        android:id="@+id/streakBadgesText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="7dp"
+                        android:gravity="center"
+                        android:text="Бейджі відкриються на 3 дні"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -485,6 +514,29 @@
                         android:lineSpacingExtra="5dp"/>
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="АРХІВ СЕРІЙ"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp"/>
+                    <TextView
+                        android:id="@+id/streakArchiveText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Попередніх серій ще немає"
+                        android:textColor="@color/text"
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="5dp"/>
+                </LinearLayout>
+
                 <Button
                     android:id="@+id/streakResetButton"
                     android:layout_width="match_parent"
@@ -498,6 +550,78 @@
             </LinearLayout>
         </ScrollView>
 
+        <!-- STATS -->
+        <ScrollView
+            android:id="@+id/statsPage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="18dp"
+                android:paddingRight="18dp"
+                android:paddingBottom="28dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="СЬОГОДНІ"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp"/>
+                    <TextView
+                        android:id="@+id/currentStatsText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="—"
+                        android:textColor="@color/text"
+                        android:textSize="15sp"
+                        android:lineSpacingExtra="6dp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ОСТАННІ WAKE-ДНІ"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp"/>
+                    <TextView
+                        android:id="@+id/historyStatsText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Ще немає даних"
+                        android:textColor="@color/text"
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="6dp"/>
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/closeStatsButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_primary"
+                    android:text="ГОТОВО"
+                    android:textColor="@color/bg"/>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- SETTINGS -->
         <ScrollView
             android:id="@+id/settingsPage"
             android:layout_width="match_parent"
@@ -518,6 +642,23 @@
                     android:background="@drawable/bg_card"
                     android:orientation="vertical">
                     <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="МОДУЛІ"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp"/>
+                    <Button android:id="@+id/foodModuleButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="9dp" android:background="@drawable/bg_secondary" android:text="ЇЖА: ON" android:textColor="@color/text"/>
+                    <Button android:id="@+id/waterModuleButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="ВОДА: ON" android:textColor="@color/text"/>
+                    <Button android:id="@+id/streakModuleButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="СЕРІЯ: ON" android:textColor="@color/text"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical">
+                    <TextView
                         android:text="НАДІЙНІСТЬ НАГАДУВАНЬ"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -534,7 +675,9 @@
                         android:lineSpacingExtra="4dp"/>
                     <Button android:id="@+id/notificationSettingsButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="10dp" android:background="@drawable/bg_secondary" android:text="СПОВІЩЕННЯ" android:textColor="@color/text"/>
                     <Button android:id="@+id/exactAlarmButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="ТОЧНІ БУДИЛЬНИКИ" android:textColor="@color/text"/>
+                    <Button android:id="@+id/fullScreenButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="FULL-SCREEN ALARM" android:textColor="@color/text"/>
                     <Button android:id="@+id/batteryButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="БАТАРЕЯ / БЕЗ ОБМЕЖЕНЬ" android:textColor="@color/text"/>
+                    <Button android:id="@+id/accessibilityButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="ШТРАФ: БЛОК СОЦМЕРЕЖ" android:textColor="@color/text"/>
                     <Button android:id="@+id/autostartButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="АВТОЗАПУСК XIAOMI" android:textColor="@color/text"/>
                 </LinearLayout>
 
@@ -555,6 +698,17 @@
                     android:layout_marginTop="12dp"
                     android:background="@drawable/bg_card"
                     android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ЗВУКИ" android:textColor="@color/muted" android:textSize="12sp"/>
+                    <Button android:id="@+id/foodSoundButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="9dp" android:background="@drawable/bg_secondary" android:text="ЗВУК ЇЖІ: ВБУДОВАНИЙ" android:textColor="@color/text"/>
+                    <Button android:id="@+id/waterSoundButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="ЗВУК ВОДИ: ВБУДОВАНИЙ" android:textColor="@color/text"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ТЕСТ НАГАДУВАНЬ" android:textColor="@color/muted" android:textSize="12sp"/>
                     <TextView
                         android:id="@+id/testStatus"
@@ -565,7 +719,7 @@
                         android:textColor="@color/text"
                         android:textSize="14sp"
                         android:lineSpacingExtra="4dp"/>
-                    <Button android:id="@+id/testButton" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="10dp" android:background="@drawable/bg_primary" android:text="ЗАПУСТИТИ ФОНОВИЙ ТЕСТ · 6 ХВ" android:textColor="@color/bg"/>
+                    <Button android:id="@+id/testButton" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="10dp" android:background="@drawable/bg_primary" android:text="ФОНОВИЙ ТЕСТ · 6 ХВ" android:textColor="@color/bg"/>
                     <Button android:id="@+id/testNextButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="НАСТУПНИЙ ЕТАП ЗАРАЗ" android:textColor="@color/text"/>
                     <Button android:id="@+id/diagnosticExportButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="ЕКСПОРТ ДІАГНОСТИКИ" android:textColor="@color/text"/>
                 </LinearLayout>
@@ -576,7 +730,7 @@
                     android:layout_height="52dp"
                     android:layout_marginTop="12dp"
                     android:background="@drawable/bg_secondary"
-                    android:text="RESET-АНІМАЦІЯ: МЕМНА"
+                    android:text="RESET-АНІМАЦІЯ: CINEMATIC"
                     android:textColor="@color/text"/>
 
                 <Button
