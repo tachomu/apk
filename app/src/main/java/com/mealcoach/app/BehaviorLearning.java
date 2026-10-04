@@ -27,6 +27,13 @@ public final class BehaviorLearning {
         return c.getSharedPreferences(PREFS,Context.MODE_PRIVATE).getFloat(FOOD_AVG,0f);
     }
 
+    public static int prepLeadMinutes(Context c){
+        float avg=foodLatenessAvg(c);
+        if(avg>25f)return 30;
+        if(avg>10f)return 25;
+        return 20;
+    }
+
     public static String prep20Text(Context c){
         float avg=foodLatenessAvg(c);
         if(avg>25f)return "Не починай нову катку. Ти часто затягуєш після бажаного часу — зараз реально відкладай справи й готуй їжу.";
