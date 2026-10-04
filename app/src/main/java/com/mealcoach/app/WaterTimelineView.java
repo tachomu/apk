@@ -20,6 +20,9 @@ public class WaterTimelineView extends View {
     public WaterTimelineView(Context c,AttributeSet a){super(c,a);}
     public WaterTimelineView(Context c,AttributeSet a,int s){super(c,a,s);}
 
+    private float dp(float v){return v*getResources().getDisplayMetrics().density;}
+    private float sp(float v){return v*getResources().getDisplayMetrics().scaledDensity;}
+
     public void setData(List<long[]> pts,long wake,long end,int goal){
         this.points=pts==null?new ArrayList<>():pts;
         this.wake=wake;
@@ -32,6 +35,7 @@ public class WaterTimelineView extends View {
         double r=(t-wake)/(double)(end-wake);
         return (float)(left+Math.max(0,Math.min(1,r))*(right-left));
     }
+
     private float y(int ml,float top,float bottom){
         double r=ml/(double)goal;
         return (float)(bottom-Math.max(0,Math.min(1,r))*(bottom-top));
@@ -39,16 +43,16 @@ public class WaterTimelineView extends View {
 
     @Override protected void onDraw(Canvas c){
         super.onDraw(c);
-        float left=24,top=18,right=getWidth()-18,bottom=getHeight()-28;
+        float left=dp(18),top=dp(10),right=getWidth()-dp(10),bottom=getHeight()-dp(24);
 
         p.setStyle(Paint.Style.STROKE);
-        p.setStrokeWidth(2);
+        p.setStrokeWidth(dp(1));
         p.setColor(0xFF27303A);
         c.drawLine(left,bottom,right,bottom,p);
         c.drawLine(left,top,left,bottom,p);
 
         p.setColor(0xFF596675);
-        p.setStrokeWidth(2);
+        p.setStrokeWidth(dp(1));
         c.drawLine(left,bottom,right,top,p);
 
         if(!points.isEmpty()){
@@ -60,18 +64,19 @@ public class WaterTimelineView extends View {
                 if(i++==0)path.moveTo(px,py);else path.lineTo(px,py);
             }
             p.setColor(0xFF59D1B5);
-            p.setStrokeWidth(5);
+            p.setStrokeWidth(dp(2.5f));
             c.drawPath(path,p);
+
             p.setStyle(Paint.Style.FILL);
-            for(long[] pt:points)c.drawCircle(x(pt[0],left,right),y((int)pt[1],top,bottom),7,p);
+            for(long[] pt:points)c.drawCircle(x(pt[0],left,right),y((int)pt[1],top,bottom),dp(3.5f),p);
         }
 
         p.setStyle(Paint.Style.FILL);
-        p.setTextSize(22);
+        p.setTextSize(sp(11));
         p.setColor(0xFF94A1AE);
         p.setTextAlign(Paint.Align.LEFT);
-        c.drawText("wake",left,bottom+23,p);
+        c.drawText("wake",left,bottom+dp(18),p);
         p.setTextAlign(Paint.Align.RIGHT);
-        c.drawText("sleep≈",right,bottom+23,p);
+        c.drawText("sleep≈",right,bottom+dp(18),p);
     }
 }
