@@ -83,6 +83,13 @@ public final class StreakEngine {
         return "СТАРТ";
     }
 
+    public static int nextMilestoneValue(Context c){
+        int d=days(c);
+        int[] m={1,3,7,14,30,60,100};
+        for(int v:m)if(d<v)return v;
+        return Math.max(100,d);
+    }
+
     public static String nextMilestone(Context c){
         int d=days(c);
         int[] m={1,3,7,14,30,60,100};
