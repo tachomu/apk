@@ -63,11 +63,21 @@ public final class MealEngine {
     public static boolean extendEating(Context c){
         SharedPreferences p=prefs(c);
         if(!p.getBoolean(K_EATING,false))return false;
+
         int ext=p.getInt(K_EATING_EXT,0);
         if(ext>=2)return false;
+
+        long start=p.getLong(K_EATING_START,System.currentTimeMillis());
+        long due=start+(20L+10L*ext)*MIN;
+        if(System.currentTimeMillis()<due)return false;
+
         ext++;
         p.edit().putInt(K_EATING_EXT,ext).apply();
-        EatingScheduler.schedule(c,p.getLong(K_EATING_START,System.currentTimeMillis()),ext);
+
+        NotificationManager nm=(NotificationManager)c.getSystemService(Context.NOTIFICATION_SERVICE);
+        if(nm!=null)nm.cancel(NotificationHelper.EATING_ID);
+
+        EatingScheduler.schedule(c,start,ext);
         DiagnosticStore.log(c,"EATING_EXTEND","count="+ext);
         return true;
     }
