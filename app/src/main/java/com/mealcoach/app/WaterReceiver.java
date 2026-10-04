@@ -12,6 +12,7 @@ public class WaterReceiver extends BroadcastReceiver {
         if(status!=HydrationEngine.GREEN){
             NotificationHelper.showWaterReminder(c,status);
         }
-        WaterScheduler.scheduleNext(c,status>=HydrationEngine.ORANGE?45*60_000L:75*60_000L);
+        long next=status==HydrationEngine.RED?25*60_000L:status==HydrationEngine.ORANGE?45*60_000L:75*60_000L;
+        WaterScheduler.scheduleNext(c,next);
     }
 }
