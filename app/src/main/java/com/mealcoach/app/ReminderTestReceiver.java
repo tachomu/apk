@@ -12,7 +12,11 @@ public class ReminderTestReceiver extends BroadcastReceiver {
 
         ReminderTestManager.mark(c,stage);
 
-        if(stage==5||stage==7){
+        if(stage==6){
+            PenaltyManager.setTemporaryBlocked(c,30_000L);
+            ReminderTestManager.markPenaltyArmed(c);
+            NotificationHelper.showTestStage(c,stage);
+        }else if(stage==5||stage==7){
             Intent service=new Intent(c,AlarmService.class);
             service.putExtra("mode",stage==7?AlarmService.MODE_TEST_FINAL:AlarmService.MODE_TEST_CONFIRM);
             service.putExtra("test_stage",stage);
