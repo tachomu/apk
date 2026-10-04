@@ -749,12 +749,17 @@ public class MainActivity extends Activity {
                 "Поточний wake-день: "+active
         );
         statsFoodProgress.setMax(3);
-        statsFoodProgress.setProgress(Math.min(3,meals));
+        statsFoodProgress.setProgress(AppSettings.foodEnabled(this)?Math.min(3,meals):0);
+        statsFoodProgress.setAlpha(AppSettings.foodEnabled(this)?1f:0.28f);
+
         statsWaterProgress.setMax(Math.max(1,goal));
-        statsWaterProgress.setProgress(Math.min(goal,water));
+        statsWaterProgress.setProgress(AppSettings.waterEnabled(this)?Math.min(goal,water):0);
+        statsWaterProgress.setAlpha(AppSettings.waterEnabled(this)?1f:0.28f);
+
         int nextMilestone=StreakEngine.nextMilestoneValue(this);
         statsStreakProgress.setMax(Math.max(1,nextMilestone));
-        statsStreakProgress.setProgress(Math.min(streak,nextMilestone));
+        statsStreakProgress.setProgress(AppSettings.streakEnabled(this)?Math.min(streak,nextMilestone):0);
+        statsStreakProgress.setAlpha(AppSettings.streakEnabled(this)?1f:0.28f);
 
         historyStatsText.setText(DaySummaryStore.stats(this));
         foodHistoryText.setText(LogStore.recent(this,30));
