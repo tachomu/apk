@@ -34,6 +34,15 @@ public class ConfirmActivity extends Activity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        android.content.SharedPreferences p = MealEngine.prefs(this);
+        if (!AppSettings.foodEnabled(this) || !p.getBoolean(MealEngine.K_DAY, false) || p.getBoolean(MealEngine.K_EATING, false)) {
+            finish();
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         // Intentionally blocked for this escalation screen.
     }
