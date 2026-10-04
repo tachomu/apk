@@ -25,7 +25,21 @@ public final class HydrationEngine {
 
     private HydrationEngine(){}
 
-    public static SharedPreferences prefs(Context c){return c.getSharedPreferences(PREFS,Context.MODE_PRIVATE);}
+    public static SharedPreferences prefs(Context c){
+        SharedPreferences p=c.getSharedPreferences(PREFS,Context.MODE_PRIVATE);
+        if(!p.getBoolean("_migrated",false)){
+            SharedPreferences old=c.getSharedPreferences("hydration_v3",Context.MODE_PRIVATE);
+            SharedPreferences.Editor e=p.edit();
+            String[] ints={K_TOTAL,K_LAST_AMOUNT,K_GOAL,K_Q1,K_Q2,K_Q3};
+            for(String k:ints)if(old.contains(k))e.putInt(k,old.getInt(k,0));
+            String[] longs={K_WAKE,K_LAST_TS};
+            for(String k:longs)if(old.contains(k))e.putLong(k,old.getLong(k,0L));
+            if(old.contains(K_ACTIVE))e.putBoolean(K_ACTIVE,old.getBoolean(K_ACTIVE,false));
+            if(old.contains(K_UNDO_VALID))e.putBoolean(K_UNDO_VALID,old.getBoolean(K_UNDO_VALID,false));
+            e.putBoolean("_migrated",true).apply();
+        }
+        return p;
+    }
     public static int goal(Context c){return prefs(c).getInt(K_GOAL,2500);}
     public static int quick(Context c,int i){SharedPreferences p=prefs(c);return i==1?p.getInt(K_Q1,250):i==2?p.getInt(K_Q2,350):p.getInt(K_Q3,500);}
     public static void setGoal(Context c,int v){prefs(c).edit().putInt(K_GOAL,Math.max(500,v)).apply();}
