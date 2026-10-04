@@ -49,6 +49,7 @@ public final class MealEngine {
         SharedPreferences p=prefs(c);
         if(!p.getBoolean(K_DAY,false))return;
         resetFoodSignals(c);
+        PenaltyManager.setBlocked(c,false);
         long now=System.currentTimeMillis();
         int late=p.getInt(K_LATE_MEALS,0);
         if(now>p.getLong(K_PREF,Long.MAX_VALUE))late++;
@@ -74,7 +75,7 @@ public final class MealEngine {
 
     public static void ate(Context c,boolean automatic){
         SharedPreferences p=prefs(c);
-        if(!p.getBoolean(K_DAY,false))return;
+        if(!p.getBoolean(K_DAY,false)||!p.getBoolean(K_EATING,false))return;
         int meals=p.getInt(K_MEALS,0)+1;
         int snacks=p.getInt(K_SNACKS,0);
         long started=p.getLong(K_EATING_START,0L);
@@ -126,7 +127,10 @@ public final class MealEngine {
         if(now<p.getLong(K_PREF,Long.MAX_VALUE))return false;
         int used=p.getInt(K_DELAY_USED,0);
         if(used>=2)return false;
-        p.edit().putLong(K_DEADLINE,p.getLong(K_DEADLINE,now)+15*MIN).putInt(K_DELAY_USED,used+1).apply();
+        p.edit()
+                .putLong(K_PREF,p.getLong(K_PREF,now)+15*MIN)
+                .putLong(K_DEADLINE,p.getLong(K_DEADLINE,now)+15*MIN)
+                .putInt(K_DELAY_USED,used+1).apply();
         resetFoodSignals(c);
         LogStore.log(c,"DELAY_15",p.getInt(K_MEALS,0),p.getInt(K_SNACKS,0),"used="+(used+1),"");
         AlarmScheduler.scheduleCurrent(c);
