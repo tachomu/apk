@@ -23,6 +23,7 @@ public final class MealEngine {
     public static final String K_TEST = "test_mode";
     public static final String K_LATE_MEALS = "late_meals";
     public static final String K_AUTO_MEALS = "auto_meals";
+    public static final String K_ESC_STAGE = "escalation_stage";
     private static final long MIN = 60_000L;
 
     private MealEngine(){}
@@ -36,7 +37,7 @@ public final class MealEngine {
         prefs(c).edit().clear()
                 .putBoolean(K_DAY,true).putBoolean(K_TEST,false)
                 .putInt(K_MEALS,0).putInt(K_SNACKS,0).putInt(K_CONSEC_SNACKS,0)
-                .putBoolean(K_EATING,false).putInt(K_EATING_EXT,0).putInt(K_LATE_MEALS,0).putInt(K_AUTO_MEALS,0)
+                .putBoolean(K_EATING,false).putInt(K_EATING_EXT,0).putInt(K_LATE_MEALS,0).putInt(K_AUTO_MEALS,0).putInt(K_ESC_STAGE,0)
                 .putLong(K_WAKE_TIME,now).putLong(K_START,now).putLong(K_PREF,now+30*MIN).putLong(K_DEADLINE,now+60*MIN)
                 .putBoolean(K_FIRST,true).putInt(K_DELAY_USED,0).apply();
         HydrationEngine.wake(c);
@@ -108,7 +109,7 @@ public final class MealEngine {
         p.edit().putInt(K_MEALS,meals).putInt(K_CONSEC_SNACKS,0)
                 .putBoolean(K_EATING,false).putLong(K_EATING_START,0L).putInt(K_EATING_EXT,0)
                 .putLong(K_START,now).putLong(K_PREF,now+3*60*MIN).putLong(K_DEADLINE,now+4*60*MIN)
-                .putBoolean(K_FIRST,false).putInt(K_DELAY_USED,0).putString(K_PHOTO,"").apply();
+                .putBoolean(K_FIRST,false).putInt(K_DELAY_USED,0).putInt(K_ESC_STAGE,0).putString(K_PHOTO,"").apply();
 
         LogStore.log(c,"FULL_MEAL",meals,snacks,duration,photo);
         DiagnosticStore.log(c,automatic?"FULL_MEAL_AUTO":"FULL_MEAL","meals="+meals);
@@ -135,7 +136,8 @@ public final class MealEngine {
             long newDeadline=newPref+window;
             e.putLong(K_PREF,newPref)
                     .putLong(K_DEADLINE,newDeadline)
-                    .putInt(K_DELAY_USED,0);
+                    .putInt(K_DELAY_USED,0)
+                    .putInt(K_ESC_STAGE,0);
         }
 
         e.apply();
@@ -159,7 +161,8 @@ public final class MealEngine {
         p.edit()
                 .putLong(K_PREF,oldPref+shift)
                 .putLong(K_DEADLINE,oldDeadline+shift)
-                .putInt(K_DELAY_USED,used+1).apply();
+                .putInt(K_DELAY_USED,used+1)
+                .putInt(K_ESC_STAGE,0).apply();
         resetFoodSignals(c);
         LogStore.log(c,"DELAY_15",p.getInt(K_MEALS,0),p.getInt(K_SNACKS,0),"used="+(used+1),"");
         AlarmScheduler.scheduleCurrent(c);
@@ -187,6 +190,16 @@ public final class MealEngine {
         DiagnosticStore.log(c,"SLEEP","food + hydration stopped");
     }
 
+    public static int escalationStage(Context c){
+        return prefs(c).getInt(K_ESC_STAGE,0);
+    }
+
+    public static void markEscalationStage(Context c,int stage){
+        SharedPreferences p=prefs(c);
+        int current=p.getInt(K_ESC_STAGE,0);
+        if(stage>current)p.edit().putInt(K_ESC_STAGE,stage).apply();
+    }
+
     public static void resumeFoodModule(Context c){
         SharedPreferences p=prefs(c);
         if(!p.getBoolean(K_DAY,false))return;
@@ -202,6 +215,7 @@ public final class MealEngine {
                 .putLong(K_DEADLINE,now+60*MIN)
                 .putBoolean(K_FIRST,first)
                 .putInt(K_DELAY_USED,0)
+                .putInt(K_ESC_STAGE,0)
                 .apply();
 
         DiagnosticStore.log(c,"FOOD_MODULE_RESUMED","first="+first);
