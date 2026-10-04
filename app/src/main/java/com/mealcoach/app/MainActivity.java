@@ -54,6 +54,8 @@ public class MainActivity extends Activity {
     private TextView reliabilityText,testStatus,currentStatsText,historyStatsText;
     private ProgressBar cycleProgress,waterProgress,statsFoodProgress,statsWaterProgress,statsStreakProgress;
     private StreakSceneView streakSceneView;
+    private HydrationTankView hydrationTankView;
+    private WaterTimelineView waterTimelineView;
 
     private Button primaryButton,snackButton,delayButton,extendEatingButton,sleepButton;
     private Button waterQuick1,waterQuick2,waterQuick3,waterCustomButton,waterUndoButton;
@@ -148,6 +150,8 @@ public class MainActivity extends Activity {
 
         cycleProgress=findViewById(R.id.cycleProgress);
         waterProgress=findViewById(R.id.waterProgress);
+        hydrationTankView=findViewById(R.id.hydrationTankView);
+        waterTimelineView=findViewById(R.id.waterTimelineView);
         statsFoodProgress=findViewById(R.id.statsFoodProgress);
         statsWaterProgress=findViewById(R.id.statsWaterProgress);
         statsStreakProgress=findViewById(R.id.statsStreakProgress);
@@ -556,6 +560,13 @@ public class MainActivity extends Activity {
         waterQuick3.setText("+"+HydrationEngine.quick(this,3));
         waterHistoryText.setText(HydrationEngine.recent(this,6));
         waterUndoButton.setVisibility(System.currentTimeMillis()<undoHideAt?View.VISIBLE:View.GONE);
+        hydrationTankView.setData(total,goal,HydrationEngine.expectedNow(this),HydrationEngine.status(this));
+        waterTimelineView.setData(
+                HydrationEngine.drinkPoints(this),
+                HydrationEngine.wakeTime(this),
+                HydrationEngine.wakeTime(this)+HydrationEngine.expectedAwakeMs(this),
+                goal
+        );
 
         if(!enabled){
             waterStateText.setText("МОДУЛЬ ВОДИ ВИМКНЕНО");
@@ -593,7 +604,7 @@ public class MainActivity extends Activity {
         waterStateText.setTextColor(color);
         waterProgress.setProgressTintList(ColorStateList.valueOf(color));
         waterWarningText.setText(HydrationEngine.warning(this));
-        waterPaceText.setText("Орієнтир зараз ≈ "+expected+" мл • прогноз ≈ "+projected+" мл\nПлан рахується від твого пробудження і вчиться з тривалості wake-днів.");
+        waterPaceText.setText("Орієнтир зараз ≈ "+expected+" мл • прогноз ≈ "+projected+" мл\nНайдовша пауза сьогодні: "+HydrationEngine.longestGapMinutes(this)+" хв • план вчиться з твоїх wake-днів.");
 
         if(!overlayOpen&&currentTab==1){statusChip.setText(HydrationEngine.statusLabel(this));statusChip.setTextColor(color);}
     }
