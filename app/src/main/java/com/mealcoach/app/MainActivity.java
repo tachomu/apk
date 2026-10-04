@@ -340,7 +340,7 @@ public class MainActivity extends Activity {
     private void showTabInstant(int tab){
         currentTab=((tab%3)+3)%3;
         overlayOpen=false;
-        applyPageTone(currentTab,false);
+        applyPageTone(currentTab,true);
         foodPage.setVisibility(currentTab==0?View.VISIBLE:View.GONE);
         waterPage.setVisibility(currentTab==1?View.VISIBLE:View.GONE);
         streakPage.setVisibility(currentTab==2?View.VISIBLE:View.GONE);
@@ -955,14 +955,14 @@ public class MainActivity extends Activity {
         sub.setGravity(Gravity.CENTER);
         sub.setAlpha(0f);
 
-        box.addView(line,new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,2));
-        box.addView(title,new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,120));
-        box.addView(sub,new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,50));
+        box.addView(line,new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,dp(2)));
+        box.addView(title,new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,dp(110)));
+        box.addView(sub,new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,dp(48)));
 
-        FrameLayout.LayoutParams bp=new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,190);
+        FrameLayout.LayoutParams bp=new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,dp(180));
         bp.gravity=Gravity.CENTER;
-        bp.leftMargin=28;
-        bp.rightMargin=28;
+        bp.leftMargin=dp(24);
+        bp.rightMargin=dp(24);
         frame.addView(box,bp);
 
         dialog.setContentView(frame);
@@ -1161,6 +1161,10 @@ public class MainActivity extends Activity {
             boolean ok=ExportStore.exportAll(this,data.getData());
             Toast.makeText(this,ok?"Дані експортовано":"Не вдалося експортувати",Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private int dp(float value){
+        return Math.round(value*getResources().getDisplayMetrics().density);
     }
 
     private String mark(boolean v){return v?"✓":"✕";}
