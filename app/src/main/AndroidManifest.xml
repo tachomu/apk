@@ -40,6 +40,9 @@
         </activity>
 
         <receiver android:name=".NotificationReceiver" android:exported="false"/>
+        <receiver android:name=".WaterReceiver" android:exported="false"/>
+        <receiver android:name=".EatingReceiver" android:exported="false"/>
+        <receiver android:name=".ReminderTestReceiver" android:exported="false"/>
         <receiver android:name=".ActionReceiver" android:exported="false"/>
         <receiver android:name=".BootReceiver" android:exported="true">
             <intent-filter>
