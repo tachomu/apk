@@ -9,7 +9,7 @@ public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         android.content.SharedPreferences p = MealEngine.prefs(context);
-        if (!p.getBoolean(MealEngine.K_DAY, false) || p.getBoolean(MealEngine.K_EATING, false)) return;
+        if (!AppSettings.foodEnabled(context) || !p.getBoolean(MealEngine.K_DAY, false) || p.getBoolean(MealEngine.K_EATING, false)) return;
 
         int type = intent.getIntExtra("type", 0);
         DiagnosticStore.log(context, "ALARM_FIRED", "type=" + type);
