@@ -141,6 +141,11 @@ public final class NotificationHelper {
                 .setContentIntent(pi).setFullScreenIntent(pi,true).build();
     }
 
+    public static void clearReminder(Context c){
+        NotificationManager nm=(NotificationManager)c.getSystemService(Context.NOTIFICATION_SERVICE);
+        if(nm!=null)nm.cancel(REMINDER_ID);
+    }
+
     private static PendingIntent openApp(Context c){
         Intent i=new Intent(c,MainActivity.class);i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
         return PendingIntent.getActivity(c,700,i,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
