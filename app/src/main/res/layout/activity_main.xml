@@ -44,7 +44,7 @@
             android:layout_height="46dp"
             android:layout_marginLeft="6dp"
             android:background="@drawable/bg_secondary"
-            android:text="▥"
+            android:text="📊"
             android:textColor="@color/text"
             android:textSize="18sp"/>
 
