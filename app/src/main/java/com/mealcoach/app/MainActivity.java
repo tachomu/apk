@@ -290,8 +290,8 @@ public class MainActivity extends Activity {
         waterGoalSettingsButton.setOnClickListener(v->askNumber("Денна ціль води, мл",HydrationEngine.goal(this),value->{HydrationEngine.setGoal(this,value);renderAll();}));
         waterQuickSettingsButton.setOnClickListener(v->chooseQuickButton());
 
-        foodSoundButton.setOnClickListener(v->pickSound(REQ_FOOD_SOUND));
-        waterSoundButton.setOnClickListener(v->pickSound(REQ_WATER_SOUND));
+        foodSoundButton.setOnClickListener(v->chooseSound(true));
+        waterSoundButton.setOnClickListener(v->chooseSound(false));
 
         testButton.setOnClickListener(v->{
             ReminderTestManager.start(this);
@@ -876,6 +876,23 @@ public class MainActivity extends Activity {
             pendingPhotoUri=null;
             Toast.makeText(this,"Камеру не знайдено.",Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void chooseSound(boolean food){
+        String current=food?AppSettings.foodSound(this):AppSettings.waterSound(this);
+        String[] items=current.isEmpty()
+                ? new String[]{"Вибрати свій аудіофайл"}
+                : new String[]{"Вибрати інший аудіофайл","Повернути вбудований звук"};
+        new AlertDialog.Builder(this).setTitle(food?"Звук їжі":"Звук води").setItems(items,(d,which)->{
+            if(!current.isEmpty()&&which==1){
+                if(food)AppSettings.setFoodSound(this,"");
+                else AppSettings.setWaterSound(this,"");
+                NotificationHelper.ensureChannels(this);
+                renderAll();
+            }else{
+                pickSound(food?REQ_FOOD_SOUND:REQ_WATER_SOUND);
+            }
+        }).show();
     }
 
     private void pickSound(int req){
