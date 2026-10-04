@@ -79,7 +79,8 @@ public final class NotificationHelper {
                 body="Починай планувати: що їстимеш і чи треба щось приготувати.";
                 channel=CH_PREP;break;
             case AlarmScheduler.PREP_20:
-                title="Через 20 хв — їжа";
+                int lead=BehaviorLearning.prepLeadMinutes(c);
+                title="Через "+lead+" хв — їжа";
                 body=BehaviorLearning.prep20Text(c);
                 channel=foodCh(c,false);break;
             case AlarmScheduler.PREFERRED:
