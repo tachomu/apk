@@ -580,17 +580,23 @@ public class MainActivity extends Activity {
             long es=p.getLong(MealEngine.K_EATING_START,now);
             int ext=p.getInt(MealEngine.K_EATING_EXT,0);
             if(!overlayOpen&&currentTab==0){statusChip.setText("ЇМ ЗАРАЗ");statusChip.setTextColor(getColor(R.color.accent));}
+            long checkAt=es+(20L+10L*ext)*60_000L;
+            long finishAt=es+(30L+10L*ext)*60_000L;
             countdown.setText(formatDuration(now-es));
             countdown.setTextColor(getColor(R.color.accent));
-            deadlineText.setText("Автозавершення через "+formatDuration(Math.max(0,es+(30L+10L*ext)*60_000L-now)));
+            deadlineText.setText("Автозавершення через "+formatDuration(Math.max(0,finishAt-now)));
             cycleProgress.setProgress(1000);
             cycleProgress.setProgressTintList(ColorStateList.valueOf(getColor(R.color.accent)));
             flowHint.setVisibility(View.VISIBLE);
             flowTitle.setText("ЗАРАЗ ТИ ЇСИ");
-            flowSteps.setText("Через 20 хв буде «Ти ще їси?». Через 30 хв — автоматичне завершення.");
+            if(ext==0){
+                flowSteps.setText("На 20-й хвилині запитаю «Ти ще їси?». Без відповіді прийом завершиться на 30-й.");
+            }else{
+                flowSteps.setText("Продовжено на "+(ext*10)+" хв • наступна перевірка через "+formatDuration(Math.max(0,checkAt-now))+".");
+            }
             primaryButton.setText("ЗАКІНЧИВ ЇСТИ");
             secondaryActions.setVisibility(View.GONE);
-            extendEatingButton.setVisibility(ext<2?View.VISIBLE:View.GONE);
+            extendEatingButton.setVisibility(ext<2&&now>=checkAt?View.VISIBLE:View.GONE);
             return;
         }
 
