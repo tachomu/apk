@@ -771,7 +771,7 @@ public class MainActivity extends Activity {
         boolean full=Build.VERSION.SDK_INT<34||(nm!=null&&nm.canUseFullScreenIntent());
         boolean access=isAccessibilityEnabled();
 
-        int score=(notif?1:0)+(exact?1:0)+(battery?1:0)+(full?1:0)+(access?1:0);
+        int score=(notif?20:0)+(exact?20:0)+(battery?20:0)+(full?20:0)+(access?20:0);
 
         reliabilityText.setText(
                 "Сповіщення "+mark(notif)+"\n"+
@@ -780,7 +780,7 @@ public class MainActivity extends Activity {
                 "Батарея без обмежень "+mark(battery)+"\n"+
                 "Штраф / блок соцмереж "+mark(access)+"\n"+
                 "Автозапуск Xiaomi — перевіряється вручну\n\n"+
-                "Надійність: "+score+"/5"
+                "Надійність: "+score+"/100"
         );
 
         foodModuleButton.setText("ЇЖА: "+(AppSettings.foodEnabled(this)?"ON":"OFF"));
