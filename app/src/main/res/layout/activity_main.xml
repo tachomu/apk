@@ -639,6 +639,28 @@
                         android:textSize="14sp"
                         android:lineSpacingExtra="6dp"/>
                 </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ІСТОРІЯ ЇЖІ"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp"/>
+                    <TextView
+                        android:id="@+id/foodHistoryText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Поки порожньо"
+                        android:textColor="@color/text"
+                        android:textSize="13sp"
+                        android:lineSpacingExtra="5dp"/>
+                </LinearLayout>
 
                 <Button
                     android:id="@+id/closeStatsButton"
@@ -762,6 +784,7 @@
                     <Button android:id="@+id/testButton" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="10dp" android:background="@drawable/bg_primary" android:text="ФОНОВИЙ ТЕСТ · 6 ХВ" android:textColor="@color/bg"/>
                     <Button android:id="@+id/testNextButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="НАСТУПНИЙ ЕТАП ЗАРАЗ" android:textColor="@color/text"/>
                     <Button android:id="@+id/diagnosticExportButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="ЕКСПОРТ ДІАГНОСТИКИ" android:textColor="@color/text"/>
+                    <Button android:id="@+id/dataExportButton" android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="7dp" android:background="@drawable/bg_secondary" android:text="ЕКСПОРТ УСІХ ДАНИХ (ZIP/CSV)" android:textColor="@color/text"/>
                 </LinearLayout>
 
                 <Button
