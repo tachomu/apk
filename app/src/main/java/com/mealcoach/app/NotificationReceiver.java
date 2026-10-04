@@ -16,6 +16,9 @@ public class NotificationReceiver extends BroadcastReceiver {
 
         if (type == AlarmScheduler.LATE_30) {
             startService(context, AlarmService.MODE_CONFIRM);
+        } else if (type == AlarmScheduler.LATE_45) {
+            PenaltyManager.setBlocked(context, true);
+            NotificationHelper.showReminder(context, type);
         } else if (type == AlarmScheduler.FINAL) {
             startService(context, AlarmService.MODE_FINAL);
         } else if (type == AlarmScheduler.PREP_60
