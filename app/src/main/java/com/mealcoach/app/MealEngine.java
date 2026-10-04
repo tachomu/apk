@@ -80,12 +80,15 @@ public final class MealEngine {
         int meals=p.getInt(K_MEALS,0)+1;
         int snacks=p.getInt(K_SNACKS,0);
         long started=p.getLong(K_EATING_START,0L);
-        long now=System.currentTimeMillis();
+        long actualNow=System.currentTimeMillis();
+        int ext=p.getInt(K_EATING_EXT,0);
+        long now=(automatic&&started>0)?started+(30L+10L*ext)*MIN:actualNow;
         String photo=p.getString(K_PHOTO,"");
         String duration=started>0?"duration_min="+Math.max(0,(now-started)/MIN):"";
         if(automatic){
             duration+=(duration.isEmpty()?"":";")+"auto_finish=true";
             p.edit().putInt(K_AUTO_MEALS,p.getInt(K_AUTO_MEALS,0)+1).apply();
+            DiagnosticStore.log(c,"AUTO_FINISH_DELIVERY","delay_ms="+Math.max(0,actualNow-now));
         }
 
         resetFoodSignals(c);
