@@ -135,6 +135,7 @@ public class AlarmService extends Service {
 
     @Override public void onDestroy(){
         handler.removeCallbacks(stopTest);
+        stopForeground(STOP_FOREGROUND_REMOVE);
         stopMediaOnly();
         if(vibrator!=null)vibrator.cancel();
         DiagnosticStore.log(this,"ALARM_SERVICE_STOP","mode="+mode+" test_stage="+testStage);
