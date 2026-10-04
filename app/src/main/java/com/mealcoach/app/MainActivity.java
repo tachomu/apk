@@ -52,7 +52,7 @@ public class MainActivity extends Activity {
     private TextView flowTitle,flowSteps,lastEventText,waterStateText,waterTotalText,waterPaceText,waterWarningText,waterHistoryText;
     private TextView streakRankText,streakDaysText,streakStatsText,streakNextText,streakBadgesText,streakMarksText,streakArchiveText;
     private TextView reliabilityText,testStatus,currentStatsText,historyStatsText;
-    private ProgressBar cycleProgress,waterProgress,statsFoodProgress,statsWaterProgress,statsStreakProgress;
+    private ProgressBar cycleProgress,waterProgress,statsFoodProgress,statsWaterProgress,statsStreakProgress,testProgress;
     private StreakSceneView streakSceneView;
     private HydrationTankView hydrationTankView;
     private WaterTimelineView waterTimelineView;
@@ -163,6 +163,7 @@ public class MainActivity extends Activity {
         statsFoodProgress=findViewById(R.id.statsFoodProgress);
         statsWaterProgress=findViewById(R.id.statsWaterProgress);
         statsStreakProgress=findViewById(R.id.statsStreakProgress);
+        testProgress=findViewById(R.id.testProgress);
 
         primaryButton=findViewById(R.id.primaryButton);
         snackButton=findViewById(R.id.snackButton);
@@ -721,6 +722,7 @@ public class MainActivity extends Activity {
             if(s<7)b.append("\n");
         }
         testStatus.setText(b.toString());
+        testProgress.setProgress(got);
     }
 
     private void toggleFoodModule(){
