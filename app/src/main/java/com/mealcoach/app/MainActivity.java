@@ -102,6 +102,14 @@ public class MainActivity extends Activity {
 
         showTabInstant(getIntent().getIntExtra("open_tab",0));
         if(getIntent().getBooleanExtra("open_settings",false))openSettings();
+        else if(!AppSettings.setupDone(this)){
+            openSettings();
+            handler.postDelayed(()->new AlertDialog.Builder(this)
+                    .setTitle("Перший запуск")
+                    .setMessage("Для надійних нагадувань пройди пункти з ✕ у блоці «Надійність». Особливо: сповіщення, точні будильники, full-screen alarm, батарея та автозапуск Xiaomi.")
+                    .setPositiveButton("Зрозуміло",null)
+                    .show(),300L);
+        }
         handler.postDelayed(()->consumeForceCamera(getIntent()),300L);
         renderAll();
     }
@@ -391,7 +399,10 @@ public class MainActivity extends Activity {
         renderSettings();
     }
 
-    private void closeOverlay(){showTabInstant(currentTab);}
+    private void closeOverlay(){
+        if(settingsPage.getVisibility()==View.VISIBLE)AppSettings.setSetupDone(this,true);
+        showTabInstant(currentTab);
+    }
 
     @Override public boolean dispatchTouchEvent(MotionEvent e){
         if(e.getAction()==MotionEvent.ACTION_DOWN){
