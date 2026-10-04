@@ -49,7 +49,6 @@ public final class MealEngine {
         SharedPreferences p=prefs(c);
         if(!p.getBoolean(K_DAY,false))return;
         resetFoodSignals(c);
-        PenaltyManager.setBlocked(c,false);
         long now=System.currentTimeMillis();
         int late=p.getInt(K_LATE_MEALS,0);
         if(now>p.getLong(K_PREF,Long.MAX_VALUE))late++;
