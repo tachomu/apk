@@ -10,6 +10,7 @@ public class BootReceiver extends BroadcastReceiver {
         if(Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())){
             NotificationHelper.ensureChannels(context);
             AlarmScheduler.scheduleCurrent(context);
+            WatchdogScheduler.schedule(context);
             if(HydrationEngine.active(context)) WaterScheduler.scheduleNext(context,10*60_000L);
             SharedPreferences p=MealEngine.prefs(context);
             if(p.getBoolean(MealEngine.K_EATING,false)){
