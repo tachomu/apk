@@ -437,6 +437,16 @@
                         android:textColor="@color/text"
                         android:textSize="14sp"
                         android:lineSpacingExtra="5dp"/>
+                    <Button
+                        android:id="@+id/waterHistoryEditButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/bg_secondary"
+                        android:text="РЕДАГУВАТИ СЬОГОДНІШНІ ЗАПИСИ"
+                        android:textAllCaps="false"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp"/>
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
